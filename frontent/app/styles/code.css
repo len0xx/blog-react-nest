@@ -1,0 +1,14 @@
+.code-block {
+    display: block;
+    padding: 0.75em;
+    position: relative;
+    background: #1e1e1e;
+    color: white;
+    border-radius: 0.5em;
+}
+
+.code-block select.code-block-selector {
+    position: absolute;
+    right: 0.5rem;
+    top: 0.5rem;
+}

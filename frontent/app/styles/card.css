@@ -1,0 +1,53 @@
+div.card {
+	--card-bg: #FFF;
+	--card-color: #000;
+	--card-color-secondary: #111;
+	--card-border: #CCC;
+
+	display: grid;
+	position: relative;
+	background-color: var(--card-bg);
+	border: 1px solid var(--card-border);
+	color: var(--card-color);
+	border-radius: 1em;
+	transition: 0.2s ease-in-out;
+    align-content: start;
+    grid-template-rows: auto 1fr;
+}
+
+div.card > div.card-title {
+	padding: 1em;
+	font-size: 1.25em;
+	font-weight: 600;
+	border-bottom: 1px solid var(--card-border);
+}
+
+div.card > div.card-content {
+    display: grid;
+    position: relative;
+    grid-gap: 1.5em;
+	padding: 1em;
+    align-content: space-between;
+}
+
+div.card > div.card-content > div.card-text {
+	color: var(--card-color-secondary);
+    overflow-x: auto;
+}
+
+div.card > div.card-content > div.card-text img {
+	max-width: 100%;
+}
+
+div.card > div.card-content > div.card-text ul {
+	padding-left: 1em;
+}
+
+@media (prefers-color-scheme: dark) {
+	div.card {
+		--card-bg: #111;
+		--card-border: #444;
+		--card-color: #FFF;
+		--card-color-secondary: #EEE;
+	}
+}

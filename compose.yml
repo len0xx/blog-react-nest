@@ -1,0 +1,72 @@
+version: '3.8'
+
+services:
+
+  db:
+    image: postgres:15.3
+    container_name: db
+    restart: always
+    environment:
+      POSTGRES_DB: blog
+      POSTGRES_USER: len0xx
+      POSTGRES_PASSWORD: DatabasePassword
+    ports:
+      - 5400:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+
+  frontend:
+    image: len0xx/blog-front
+    container_name: frontend
+    build: ./frontend
+    restart: on-failure:10
+    depends_on:
+      - backend
+    environment:
+      BACKEND_PROTOCOL: http
+      BACKEND_CONTAINER: backend
+      BACKEND_PORT: 8000
+    ports:
+      - 4000:3000
+
+  backend:
+    image: len0xx/blog-nest
+    container_name: backend
+    build: ./backend
+    restart: on-failure:10
+    depends_on:
+      - db
+    environment:
+      PORT: 8000
+      DATABASE_URL: postgresql://len0xx:DatabasePassword@db:5432/blog?schema=public
+    ports:
+      - 8080:8000
+
+  images:
+    image: len0xx/blog-nest-images
+    container_name: images
+    build: ./images
+    restart: on-failure:10
+    depends_on:
+      - backend
+    environment:
+      PORT: 8000
+    ports:
+      - 8100:8000
+    volumes:
+      - static_files:/backend/files
+    
+  nginx:
+    image: len0xx/blog-nginx
+    build: ./nginx
+    container_name: nginx
+    restart: always
+    depends_on:
+      - frontend
+    ports:
+      - 80:80
+    volumes:
+      - static_files:/static
+
+volumes:
+  static_files:

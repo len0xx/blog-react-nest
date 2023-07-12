@@ -1,0 +1,4 @@
+const { BACKEND_CONTAINER, BACKEND_PORT, BACKEND_PROTOCOL } = process.env
+
+export const API_ENDPOINT = `${ process.env.NEXT_PUBLIC_PROTOCOL }://${ process.env.NEXT_PUBLIC_API_HOST }`
+export const API_ENDPOINT_BACK = `${ BACKEND_PROTOCOL }://${ BACKEND_CONTAINER }:${ BACKEND_PORT }`

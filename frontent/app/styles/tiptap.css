@@ -1,0 +1,66 @@
+.ProseMirror {
+    padding: 1em;
+    background: white;
+    color: black;
+    border-radius: 0.5em;
+}
+
+.ProseMirror > * + * {
+    margin-top: 0.75em;
+}
+
+.ProseMirror ul,
+.ProseMirror ol {
+    padding: 0 1rem;
+}
+
+.bubble-menu {
+    display: flex;
+    background-color: #0D0D0D;
+    padding: 0.2rem;
+    border-radius: 0.25rem;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.bubble-menu button {
+    border: none;
+    background: none;
+    color: #FFF;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0 0.2rem;
+    opacity: 0.6;
+}
+
+.bubble-menu button:hover,
+.bubble-menu button.is-active {
+    opacity: 1;
+}
+
+.floating-menu {
+    display: flex;
+    background-color: #0D0D0D10;
+    padding: 0.2rem;
+    border-radius: 0.5rem;
+}
+
+.floating-menu button {
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: black;
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0 0.2rem;
+    opacity: 0.6;
+}
+
+.floating-menu button:hover,
+.floating-menu button.is-active {
+    opacity: 1;
+}
+
+.ProseMirror img {
+    max-width: 100%;
+}
