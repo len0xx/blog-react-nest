@@ -6,7 +6,7 @@ import {
     useEditor,
 } from '@tiptap/react'
 import StarterKit from '@tiptap/starter-kit'
-import { Ref, forwardRef, useImperativeHandle, useRef } from 'react'
+import { Ref, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -17,6 +17,7 @@ import CodeBlockComponent from './CodeBlock'
 import { lowlight } from 'lowlight'
 import { API_ENDPOINT } from '@/config'
 import '@/app/styles/tiptap.css'
+import { InlineAlert } from 'evergreen-ui'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -31,8 +32,14 @@ interface ImagesResponse {
     url: string
 }
 
+interface ErrorResponse {
+    message?: string
+}
+
 const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     const fileInput = useRef<HTMLInputElement | null>(null)
+    const [ error, setError ] = useState<boolean>(false)
+    const [ errorText, setErrorText ] = useState<string | null>(null)
 
     const editor = useEditor({
         extensions: [
@@ -60,12 +67,27 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
         data.append('file', fileInput.current!.files![0])
 
         const res = await fetch(`${API_ENDPOINT}/api/files`, { method: 'POST', body: data })
-        const response = (await res.json()) as ImagesResponse
-        console.log(response)
         
         if (res.ok) {
+            setError(false)
+            const response = (await res.json()) as ImagesResponse
             const url = response.url
             editor!.chain().focus().setImage({ src: url }).run()
+        }
+        else {
+            setError(true)
+            try {
+                const response = (await res.json()) as ErrorResponse
+                setErrorText(response.message || 'An unexpected error occurred, please try again later')
+            }
+            catch (e) {
+                if (res.status == 413) {
+                    setErrorText('The file is too large. Please select a smaller file and try again')
+                }
+                else {
+                    setErrorText('An unexpected error occurred, please try again later')
+                }
+            }
         }
     }
 
@@ -76,7 +98,7 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     useImperativeHandle(ref, () => publicRef)
 
     return (
-        <>
+        <div className="editor-window">
             {editor && <BubbleMenu className="bubble-menu" tippyOptions={{ duration: 100 }} editor={editor}>
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
@@ -139,8 +161,12 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
             </FloatingMenu>}
 
             <EditorContent editor={editor} />
-            <input type="file" disabled name="tiptap-image-upload" ref={ fileInput } onInput={ fileSelected } style={{ display: 'none' }} />
-        </>
+            {error && <>
+                <br />
+                <InlineAlert intent="danger">Error: { errorText }</InlineAlert>
+            </>}
+            <input type="file" disabled name="tiptap-image-upload" ref={ fileInput } onInput={ fileSelected } style={{ display: 'none' }} accept="image/png, image/jpeg, image/svg+xml" />
+        </div>
     )
 
 })
