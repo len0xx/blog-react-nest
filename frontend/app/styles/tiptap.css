@@ -5,8 +5,9 @@
     border-radius: 0.5em;
 }
 
-.ProseMirror > * + * {
-    margin-top: 0.75em;
+.ProseMirror > * + *,
+.post-content > * + * {
+    margin-top: 0.85em;
 }
 
 .ProseMirror ul,
@@ -29,7 +30,7 @@
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
-    padding: 0 0.2rem;
+    padding: 0 0.4rem;
     opacity: 0.6;
 }
 
@@ -52,8 +53,8 @@
     color: black;
     font-size: 0.85rem;
     font-weight: 500;
-    padding: 0 0.2rem;
-    opacity: 0.6;
+    padding: 0 0.4rem;
+    opacity: 0.5;
 }
 
 .floating-menu button:hover,
@@ -61,6 +62,7 @@
     opacity: 1;
 }
 
-.ProseMirror img {
+.ProseMirror img,
+.post-content img {
     max-width: 100%;
 }

@@ -19,6 +19,7 @@ import { lowlight } from 'lowlight'
 import 'highlight.js/styles/github-dark.css'
 import hljs from 'highlight.js'
 import Image from '@tiptap/extension-image'
+import '@/app/styles/tiptap.css'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -53,5 +54,5 @@ export default function Content({ content }: ComponentProps) {
         [jsonContent]
     )
 
-	return <div dangerouslySetInnerHTML={{ __html: text }} />
+	return <div className="post-content" dangerouslySetInnerHTML={{ __html: text }} />
 }

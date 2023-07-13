@@ -2,7 +2,6 @@
 
 import Button from './Button'
 import Content from './Content'
-import '@/app/styles/page.css'
 
 interface ComponentProps {
 	title: string
