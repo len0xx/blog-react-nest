@@ -3,13 +3,13 @@
 import { useEffect } from 'react'
 import Button from '@/components/Button'
 
-export default function Error({
+export default ({
     error,
     reset,
 }: {
         error: Error
         reset: () => void
-    }) {
+    }) => {
     useEffect(() => {
         // Log the error to an error reporting service
         console.error(error)

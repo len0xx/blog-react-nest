@@ -3,13 +3,13 @@
 import { useEffect } from 'react'
 import Button from '@/components/Button'
 
-export default function Error({
+export default ({
     error,
     reset,
 }: {
         error: Error
         reset: () => void
-    }) {
+    }) => {
 
     let heading = error.message
 

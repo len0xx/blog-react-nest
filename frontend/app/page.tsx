@@ -18,7 +18,7 @@ const getData = async (): Promise<Post[]> => {
 	return res.json()
 }
 
-export default async function Home() {
+export default async () => {
 	const data = await getData()
 
 	return (

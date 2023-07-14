@@ -11,12 +11,15 @@ interface Post {
 
 interface PageOptions {
 	params: {
-		id: number
+		id: string 
 	}
 }
 
 const getData = async (id: number): Promise<Post> => {
-	if (isNaN(id)) throw new HTTPError(400, 'Invalid post id')
+	if (isNaN(+id)) {
+        console.error('NaN')
+        throw new HTTPError(400, 'Invalid post id')
+    }
 
 	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post/${ id }`, { cache: 'no-store' })
     let data: Post = await res.json()
@@ -26,8 +29,8 @@ const getData = async (id: number): Promise<Post> => {
 	return data!
 }
 
-export default async function Home({ params }: PageOptions) {
-	const data = await getData(+params.id)
+export default async ({ params: { id } }: PageOptions) => {
+	const data = await getData(+id)
 
 	return (
 		<PostPage title={ data.title } content={ data.content } />	
