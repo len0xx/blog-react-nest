@@ -19,7 +19,7 @@ export default function Error({
     }, [error])
 
     return (
-        <main>
+        <>
             <h2>{ heading }</h2><br />
             <Button
                 onClick={
@@ -31,6 +31,6 @@ export default function Error({
             </Button>
             <span className='text-margin'>or</span>
             <a href="/">Go to the main page</a>
-        </main>
+        </>
     )
 }
