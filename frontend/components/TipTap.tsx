@@ -60,7 +60,12 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                         return ReactNodeViewRenderer(CodeBlockComponent)
                     }
                 })
-                .configure({ lowlight })
+                .configure({
+                    lowlight,
+                    HTMLAttributes: {
+                        class: 'post-code-block'
+                    }
+                })
         ],
         content: '<p>Start typing here</p>'
     })
