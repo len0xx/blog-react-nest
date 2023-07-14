@@ -17,7 +17,6 @@ interface PageOptions {
 
 const getData = async (id: number): Promise<Post> => {
 	if (isNaN(+id)) {
-        console.error('NaN')
         throw new HTTPError(400, 'Invalid post id')
     }
 
