@@ -19,8 +19,8 @@ import CodeBlockComponent from './CodeBlock'
 import { lowlight } from 'lowlight'
 import { API_ENDPOINT } from '@/config'
 import '@/app/styles/tiptap.css'
-import { InlineAlert } from 'evergreen-ui'
-import { useCallback } from 'react'
+import { Dialog, InlineAlert, TextInput } from 'evergreen-ui'
+import { FormEvent } from 'react'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -43,6 +43,8 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [ error, setError ] = useState<boolean>(false)
     const [ errorText, setErrorText ] = useState<string | null>(null)
+    const [ isDialogShown, setIsDialogShown ] = useState(false)
+    const [ linkUrl, setLinkUrl ] = useState('')
 
     const editor = useEditor({
         extensions: [
@@ -63,24 +65,28 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
         content: '<p>Start typing here</p>'
     })
 
-    const setLink = useCallback(() => {
-        const previousUrl = editor!.getAttributes('link').href
-        const url = window.prompt('URL', previousUrl)
+    const openDialog = () => {
+        setIsDialogShown(true)
+    }
 
-        if (url === null) {
+    const setLink = () => {
+        if (linkUrl === null) {
             return
         }
 
-        if (url === '') {
-            editor!.chain().focus().extendMarkRange('link').unsetLink()
-                .run()
+        if (linkUrl === '') {
+            editor!.chain().focus().extendMarkRange('link').unsetLink().run()
 
             return
         }
 
-        editor!.chain().focus().extendMarkRange('link').setLink({ href: url })
-            .run()
-    }, [editor])
+        editor!.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run()
+    }
+
+    const closeDialog = () => {
+        setIsDialogShown(false)
+        setLink()
+    }
 
     const addImage = () => {
         fileInput.current!.removeAttribute('disabled')
@@ -125,7 +131,19 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
 
     return (
         <div className="editor-window">
-            {editor && <BubbleMenu className="bubble-menu" tippyOptions={{ duration: 100 }} editor={editor}>
+            <Dialog
+                isShown={isDialogShown}
+                title="Set link URL"
+                onCloseComplete={closeDialog}
+                confirmLabel="Confirm"
+            >
+                <TextInput
+                    placeholder="https://example.com"
+                    onInput={(e: FormEvent<HTMLInputElement>) => setLinkUrl((e.target as HTMLInputElement).value)}
+                    width="100%"
+                />
+            </Dialog>
+            {editor && <BubbleMenu className="bubble-menu" tippyOptions={{ duration: 100, zIndex: 19 }} editor={editor}>
                 <button
                     onClick={() => editor.chain().focus().toggleBold().run()}
                     type="button"
@@ -155,7 +173,7 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                     Strike
                 </button>
                 <button
-                    onClick={setLink}
+                    onClick={openDialog}
                     type="button"
                     className={editor.isActive('link') ? 'is-active' : ''}
                 >
