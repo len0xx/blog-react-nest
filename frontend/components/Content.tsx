@@ -19,6 +19,8 @@ import { lowlight } from 'lowlight'
 import 'highlight.js/styles/github-dark.css'
 import hljs from 'highlight.js'
 import Image from '@tiptap/extension-image'
+import Link from '@tiptap/extension-link'
+import Underline from '@tiptap/extension-underline'
 import '@/app/styles/tiptap.css'
 
 lowlight.registerLanguage('html', html)
@@ -48,6 +50,8 @@ export default function Content({ content }: ComponentProps) {
                 Heading,
                 BulletList,
                 BulletItem,
+                Link,
+                Underline,
                 CodeBlockLowlight
             ]
         ),

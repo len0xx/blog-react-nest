@@ -12,12 +12,15 @@ import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import Image from '@tiptap/extension-image'
+import Underline from '@tiptap/extension-underline'
+import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import CodeBlockComponent from './CodeBlock'
 import { lowlight } from 'lowlight'
 import { API_ENDPOINT } from '@/config'
 import '@/app/styles/tiptap.css'
 import { InlineAlert } from 'evergreen-ui'
+import { useCallback } from 'react'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -45,6 +48,10 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
         extensions: [
             StarterKit,
             Image,
+            Underline,
+            Link.configure({
+                openOnClick: false,
+            }),
             CodeBlockLowlight
                 .extend({
                     addNodeView() {
@@ -55,6 +62,25 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
         ],
         content: '<p>Start typing here</p>'
     })
+
+    const setLink = useCallback(() => {
+        const previousUrl = editor!.getAttributes('link').href
+        const url = window.prompt('URL', previousUrl)
+
+        if (url === null) {
+            return
+        }
+
+        if (url === '') {
+            editor!.chain().focus().extendMarkRange('link').unsetLink()
+                .run()
+
+            return
+        }
+
+        editor!.chain().focus().extendMarkRange('link').setLink({ href: url })
+            .run()
+    }, [editor])
 
     const addImage = () => {
         fileInput.current!.removeAttribute('disabled')
@@ -115,11 +141,25 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                     Italic
                 </button>
                 <button
+                    onClick={() => editor.chain().focus().toggleUnderline().run()}
+                    type="button"
+                    className={editor.isActive('underline') ? 'is-active' : ''}
+                >
+                    Underline
+                </button>
+                <button
                     onClick={() => editor.chain().focus().toggleStrike().run()}
                     type="button"
                     className={editor.isActive('strike') ? 'is-active' : ''}
                 >
                     Strike
+                </button>
+                <button
+                    onClick={setLink}
+                    type="button"
+                    className={editor.isActive('link') ? 'is-active' : ''}
+                >
+                    Link
                 </button>
                 <button
                     onClick={() => console.log(editor.getJSON())}
