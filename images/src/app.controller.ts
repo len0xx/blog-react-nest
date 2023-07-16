@@ -15,8 +15,8 @@ import { MulterOptions } from '@nestjs/platform-express/multer/interfaces/multer
 const API_ENDPOINT = 'http://blog.local'
 
 const imageFileFilter = (_: Request, file: Express.Multer.File, callback: (e: Error, a: boolean) => void) => {
-    if (!file.originalname.toLocaleLowerCase().match(/\.(jpg|jpeg|png|gif)$/)) {
-        return callback(new UnsupportedMediaTypeException('Only images are allowed'), false)
+    if (!file.originalname.toLocaleLowerCase().match(/\.(jpg|jpeg|png|svg|webp)$/)) {
+        return callback(new UnsupportedMediaTypeException('Only images are allowed (JPG/PNG/SVG/WEBP)'), false)
     }
 
     callback(null, true)
