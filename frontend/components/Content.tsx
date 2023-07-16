@@ -11,11 +11,11 @@ import Heading from '@tiptap/extension-heading'
 import BulletList from '@tiptap/extension-bullet-list'
 import BulletItem from '@tiptap/extension-list-item'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
-import 'highlight.js/styles/github-dark.css'
-import hljs from 'highlight.js'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
+import 'highlight.js/styles/github-dark.css'
+import hljs from 'highlight.js'
 import '@/app/styles/tiptap.css'
 
 interface ComponentProps {

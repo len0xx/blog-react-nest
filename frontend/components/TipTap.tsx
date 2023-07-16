@@ -1,11 +1,18 @@
 import {
-    BubbleMenu,
     EditorContent,
+    BubbleMenu as BubbleMenuComponent,
     FloatingMenu,
     ReactNodeViewRenderer,
-    useEditor,
+    useEditor
 } from '@tiptap/react'
-import StarterKit from '@tiptap/starter-kit'
+import Bold from '@tiptap/extension-bold'
+import Italic from '@tiptap/extension-italic'
+import Document from '@tiptap/extension-document'
+import Paragraph from '@tiptap/extension-paragraph'
+import Text from '@tiptap/extension-text'
+import Heading from '@tiptap/extension-heading'
+import BulletList from '@tiptap/extension-bullet-list'
+import BulletItem from '@tiptap/extension-list-item'
 import { Ref, forwardRef, useImperativeHandle, useRef, useState } from 'react'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
@@ -13,6 +20,7 @@ import ts from 'highlight.js/lib/languages/typescript'
 import html from 'highlight.js/lib/languages/xml'
 import Image from '@tiptap/extension-image'
 import Underline from '@tiptap/extension-underline'
+import Strike from '@tiptap/extension-strike'
 import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import CodeBlockComponent from './CodeBlock'
@@ -21,6 +29,9 @@ import { API_ENDPOINT } from '@/config'
 import '@/app/styles/tiptap.css'
 import { Dialog, InlineAlert, TextInput } from 'evergreen-ui'
 import { FormEvent } from 'react'
+import { isTextSelection } from '@tiptap/core'
+import type { EditorState } from '@tiptap/pm/state'
+import type { EditorView } from '@tiptap/pm/view'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -45,12 +56,49 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     const [ errorText, setErrorText ] = useState<string | null>(null)
     const [ isDialogShown, setIsDialogShown ] = useState(false)
     const [ linkUrl, setLinkUrl ] = useState('')
+    const menuWrapper = useRef<HTMLDivElement | null>(null)
+
+    const shouldShow = ({ view, state, from, to }: {
+        view: EditorView,
+        state: EditorState,
+        from: number,
+        to: number
+    }) => {
+        const { doc, selection } = state
+        const { empty } = selection
+
+        // Sometime check for `empty` is not enough.
+        // Doubleclick an empty paragraph returns a node size of 2.
+        // So we check also for an empty text size.
+        const isEmptyTextBlock = !doc.textBetween(from, to).length && isTextSelection(state.selection)
+
+        // When clicking on a element inside the bubble menu the editor "blur" event
+        // is called and the bubble menu item is focussed. In this case we should
+        // consider the menu as part of the editor and keep showing the menu
+        const isChildOfMenu = menuWrapper.current!.contains(document.activeElement)
+
+        const hasEditorFocus = view.hasFocus() || isChildOfMenu
+
+        if (!hasEditorFocus || empty || isEmptyTextBlock || !editor!.isEditable || editor?.isActive('image')) {
+            return false
+        }
+
+        return true
+    }
 
     const editor = useEditor({
         extensions: [
-            StarterKit,
+            Bold,
+            Italic,
+            Document,
+            Paragraph,
+            Text,
             Image,
+            Heading,
+            BulletList,
+            BulletItem,
             Underline,
+            Strike,
             Link.configure({
                 openOnClick: false,
             }),
@@ -148,49 +196,51 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                     width="100%"
                 />
             </Dialog>
-            {editor && <BubbleMenu className="bubble-menu" tippyOptions={{ duration: 100, zIndex: 19 }} editor={editor}>
-                <button
-                    onClick={() => editor.chain().focus().toggleBold().run()}
-                    type="button"
-                    className={editor.isActive('bold') ? 'is-active' : ''}
-                >
-                    Bold
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleItalic().run()}
-                    type="button"
-                    className={editor.isActive('italic') ? 'is-active' : ''}
-                >
-                    Italic
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleUnderline().run()}
-                    type="button"
-                    className={editor.isActive('underline') ? 'is-active' : ''}
-                >
-                    Underline
-                </button>
-                <button
-                    onClick={() => editor.chain().focus().toggleStrike().run()}
-                    type="button"
-                    className={editor.isActive('strike') ? 'is-active' : ''}
-                >
-                    Strike
-                </button>
-                <button
-                    onClick={openDialog}
-                    type="button"
-                    className={editor.isActive('link') ? 'is-active' : ''}
-                >
-                    Link
-                </button>
-                <button
-                    onClick={() => console.log(editor.getJSON())}
-                    type="button"
-                >
-                   Debug 
-                </button>
-            </BubbleMenu>}
+            {editor && <div className="bubble-menu-wrapper" ref={ menuWrapper }>
+                <BubbleMenuComponent editor={ editor } className="bubble-menu" tippyOptions={{ duration: 100, zIndex: 19 }} shouldShow={ shouldShow }>
+                    <button
+                        onClick={() => editor.chain().focus().toggleBold().run()}
+                        type="button"
+                        className={editor.isActive('bold') ? 'is-active' : ''}
+                    >
+                        Bold
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().toggleItalic().run()}
+                        type="button"
+                        className={editor.isActive('italic') ? 'is-active' : ''}
+                    >
+                        Italic
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().toggleUnderline().run()}
+                        type="button"
+                        className={editor.isActive('underline') ? 'is-active' : ''}
+                    >
+                        Underline
+                    </button>
+                    <button
+                        onClick={() => editor.chain().focus().toggleStrike().run()}
+                        type="button"
+                        className={editor.isActive('strike') ? 'is-active' : ''}
+                    >
+                        Strike
+                    </button>
+                    <button
+                        onClick={openDialog}
+                        type="button"
+                        className={editor.isActive('link') ? 'is-active' : ''}
+                    >
+                        Link
+                    </button>
+                    <button
+                        onClick={() => console.log(editor.getJSON())}
+                        type="button"
+                    >
+                        Debug 
+                    </button>
+                </BubbleMenuComponent>
+            </div>}
 
             {editor && <FloatingMenu className="floating-menu" tippyOptions={{ duration: 100 }} editor={editor}>
                 <button
