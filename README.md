@@ -15,5 +15,15 @@ Minimalistic but fully functional blog application
 ### Features
 
 - **WYSIWYG Editor** (by TipTap)
+- **Authorization** (by NextAuth)
 - Comments (Coming soon)
-- Authorization (Coming soon)
+
+## Internal structure
+
+### Services (Docker containers)
+
+- Frontend (Next.js application)
+- Backend (Nest.js application for general API)
+- DB (PostgreSQL instance)
+- Images (Another Nest.js application for uploading images)
+- Nginx router
