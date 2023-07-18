@@ -139,8 +139,6 @@ main {
     grid-gap: 1.5em;
 }
 
-
-
 header {
     display: grid;
     grid-template-columns: auto auto;
@@ -164,4 +162,17 @@ header {
 
 header a {
     text-decoration: none;
+}
+
+.auth-form {
+    display: grid;
+    position: relative;
+    grid-gap: 1em;
+    justify-content: center;
+    padding: 2em 0;
+}
+
+.buttons > button:not(:last-child),
+.buttons > a:not(:last-child) {
+    margin-right: 1em;
 }

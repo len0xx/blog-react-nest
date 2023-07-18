@@ -13,9 +13,11 @@ RUN pnpm i -P
 RUN cp -R node_modules /tmp/node_modules
 RUN pnpm install
 
-COPY next.config.js tsconfig.json config.ts util.ts .
+COPY next.config.js tsconfig.json config.ts util.ts middleware.ts .
 
 # COPY public ./public
+COPY lib ./lib
+COPY types ./types
 COPY app ./app
 COPY components ./components
 

@@ -3,12 +3,13 @@
 import { Button } from 'evergreen-ui'
 
 interface ComponentProps {
+    appearance?: string
 	children?: React.ReactNode
 	onClick?: () => void
 }
 
-export default function ButtonComponent({ children, onClick }: ComponentProps) {
-	return <Button appearance="primary" onClick={ onClick }>
+export default function ButtonComponent({ children, appearance = 'primary', onClick }: ComponentProps) {
+	return <Button appearance={ appearance } onClick={ onClick }>
 		{ children }
 	</Button>
 }
