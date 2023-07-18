@@ -8,9 +8,16 @@ datasource db {
 }
 
 model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  content   String?
-  published Boolean  @default(false)
+  id            Int      @id @default(autoincrement())
+  title         String   @db.VarChar(255)
+  createdAt     DateTime @default(now()) @db.Timestamp(6)
+  content       String?
+  published     Boolean  @default(false)
+}
+
+model User {
+    id          Int     @id @default(autoincrement())
+    email       String  @db.VarChar(255) @unique()
+    fullName    String  @db.VarChar(255)
+    password    String  @db.VarChar(512)
 }
