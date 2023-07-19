@@ -30,13 +30,6 @@ export class PostController {
         return JSON.stringify(posts)
     }
 
-    @Get('test')
-    @Header('Content-Type', 'application/json')
-    async test(): Promise<string> {
-        const user = { id: 2, name: 'Prokhor', email: 'len0xx@icloud.com' }
-        return JSON.stringify(user)
-    }
-
     @Post()
     @HttpCode(HttpStatus.CREATED)
     @Header('Content-Type', 'application/json')
