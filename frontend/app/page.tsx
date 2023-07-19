@@ -1,7 +1,5 @@
 import Card from '@/components/Card'
 import { API_ENDPOINT_BACK } from '@/config'
-import { authOptions } from '@/lib/auth'
-import { getServerSession } from 'next-auth'
 
 interface Post {
 	id: number
@@ -22,8 +20,6 @@ const getData = async (): Promise<Post[]> => {
 
 export default async () => {
 	const data = await getData()
-    const session = await getServerSession(authOptions)
-    console.log(session)
 
 	return (
 		<>
