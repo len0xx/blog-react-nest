@@ -4,12 +4,13 @@ import { FormEvent, useRef, useState } from 'react'
 import { TextInput, Button, Label, InlineAlert } from 'evergreen-ui'
 import { API_ENDPOINT } from '@/config'
 import TipTap from './TipTap'
+import { Session } from 'next-auth'
 
 interface Editor {
     getJSON: () => string 
 }
 
-export default function NewForm() {
+export default function NewForm({ session }: { session: Session }) {
 	const [success, setSuccess] = useState(false)
 	const [errorText, setErrorText] = useState('')
 	const [error, setError] = useState(false)
@@ -37,7 +38,10 @@ export default function NewForm() {
 		
 		const res = await fetch(`${API_ENDPOINT}/api/post`, {
 			method: 'POST',
-			headers: { 'Content-Type': 'application/json' },
+			headers: {
+                'Content-Type': 'application/json',
+                'Authorization': session.user.backendToken
+            },
 			body: JSON.stringify(post)
 		})
         const response = await res.json()

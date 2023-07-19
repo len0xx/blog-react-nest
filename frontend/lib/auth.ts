@@ -20,7 +20,8 @@ export const authOptions: NextAuthOptions = {
             async authorize(credentials) {
                 const data = {
                     email: credentials!.email,
-                    password: credentials!.password
+                    password: credentials!.password,
+                    token: process.env.NEST_ACCESS_TOKEN
                 }
 
                 const options: RequestInit = {
@@ -45,6 +46,7 @@ export const authOptions: NextAuthOptions = {
             if (user) {
                 token.id = +user.id
                 token.fullName = user.fullName
+                token.backendToken = user.backendToken
             }
             return token
         },
@@ -52,6 +54,7 @@ export const authOptions: NextAuthOptions = {
             if (session && token) {
                 session.user.fullName = token.fullName
                 session.user.id = token.id
+                session.user.backendToken = token.backendToken
             }
             return session
         }

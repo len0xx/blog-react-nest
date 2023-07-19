@@ -7,6 +7,7 @@ import { useEffect, useState } from "react"
 export default () => {
     const { data: session } = useSession()
     const [ user, setUser ] = useState<User | null>(null)
+    console.log(user)
 
     useEffect(() => {
         if (session && session.user) setUser(session.user)

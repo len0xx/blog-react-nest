@@ -6,6 +6,7 @@ declare module 'next-auth' {
         id: number
         email: string
         fullName: string
+        backendToken: string
     }
 
     interface Session {
@@ -15,10 +16,11 @@ declare module 'next-auth' {
 
 declare module 'next-auth/jwt' {
     interface JWT {
-        email: string
         id: number
-        sub: string
+        email: string
         fullName: string
+        backendToken: string
+        sub: string
         iat: number
         exp: number
         jti: string

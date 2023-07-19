@@ -26,6 +26,7 @@ services:
       BACKEND_PROTOCOL: http
       BACKEND_CONTAINER: backend
       BACKEND_PORT: 8000
+      NEST_ACCESS_TOKEN: kq8An2hu7S7v9S9j39ZnD8CDj5SakevSj2e06SjbS8An0a7ancs4A9c3mSjsSVD29z7v
       NEXTAUTH_SECRET: nEis8Sbne9cja0ASj8Cj2JCA1c8Aj0lbvA09cka89Zn3Vnjs8SVj0zmsViV01n28VjksnZ7
       NEXTAUTH_URL: http://blog.local
     ports:
@@ -40,6 +41,8 @@ services:
       - db
     environment:
       PORT: 8000
+      NEST_ACCESS_TOKEN: kq8An2hu7S7v9S9j39ZnD8CDj5SakevSj2e06SjbS8An0a7ancs4A9c3mSjsSVD29z7v
+      AUTH_SECRET: Bjev6Suis8sVjdi8ssvnz8xjvs7vn329SVjb7dbfnd8dJjvjhvs8svh2vj495bj5sdfv3vbhvsjd
       DATABASE_URL: postgresql://len0xx:DatabasePassword@db:5432/blog?schema=public
     ports:
       - 8080:8000

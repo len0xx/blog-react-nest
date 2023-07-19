@@ -12,10 +12,12 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    UseGuards,
 } from '@nestjs/common'
 import { PostService } from './post.service'
 import PostDto from './post.dto'
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
+import { AuthGuard } from './auth.guard'
 
 @Controller('api/post')
 export class PostController {
@@ -31,6 +33,7 @@ export class PostController {
     }
 
     @Post()
+    @UseGuards(AuthGuard)
     @HttpCode(HttpStatus.CREATED)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
@@ -83,6 +86,7 @@ export class PostController {
     }
 
     @Patch(':id')
+    @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Post updated successfully'})
@@ -107,6 +111,7 @@ export class PostController {
     }
 
     @Delete(':id')
+    @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'New post created successfully'})
