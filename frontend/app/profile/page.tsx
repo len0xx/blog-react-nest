@@ -1,3 +1,3 @@
-import { User } from "@/components/Profile"
+import Profile from "@/components/Profile"
 
-export default () => <User />
+export default () => <Profile />
