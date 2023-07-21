@@ -9,26 +9,27 @@ const AUTH_SECRET = process.env.AUTH_SECRET
 
 @Injectable()
 export class AuthGuard implements CanActivate {
-    privilegedRoles = [ UserRoleEnum.ADMIN ] as UserRole[]
+    private privilegedRoles = [ UserRoleEnum.ADMIN ] as UserRole[]
+    private defaultException = new ForbiddenException('You don\'t have access to this resource')
 
-    getUserService(): UserService {
+    private getUserService(): UserService {
         const prismaService = new PrismaService()
         return new UserService(prismaService)
     }
 
-    validateToken(token: string): UserDto {
+    private validateToken(token: string): UserDto {
         try {
             const payload = jwt.verify(token, AUTH_SECRET) as UserDto
-            if (!payload) throw new ForbiddenException()
+            if (!payload) throw this.defaultException
             return payload
         }
         catch (e) {
             console.error(e)
-            throw new ForbiddenException('You don\'t have access to this resource')
+            throw this.defaultException
         }
     }
 
-    validateUserRole(user: UserDto): boolean {
+    private validateUserRole(user: UserDto): boolean {
         return this.privilegedRoles.includes(user.role)
     }
 
@@ -40,7 +41,7 @@ export class AuthGuard implements CanActivate {
 
         const token = request.headers.authorization
         if (!token) {
-            throw new ForbiddenException('You don\'t have access to this resource')
+            throw this.defaultException
         }
 
         const payload = this.validateToken(token)
@@ -51,7 +52,7 @@ export class AuthGuard implements CanActivate {
             return true
         }
         else {
-            throw new ForbiddenException('You don\'t have access to this resource')
+            throw this.defaultException
         }
     }
 }
