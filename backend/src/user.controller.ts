@@ -1,11 +1,13 @@
 import { BadRequestException, Body, Controller, Header, Post, UnauthorizedException } from "@nestjs/common"
 import { UserService } from "./user.service"
-import UserDto from "./user.dto"
+import { CreateUser } from "./user.service"
 import { compare, hash } from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 
 const NEST_ACCESS_TOKEN = process.env.NEST_ACCESS_TOKEN as string
 const NEST_AUTH_SECRET = process.env.AUTH_SECRET as string
+
+type CreateUserBody = CreateUser & { passwordRepeat: string }
 
 @Controller('api/user')
 export class UserController {
@@ -13,7 +15,7 @@ export class UserController {
 
     @Post('create')
     @Header('Content-Type', 'application/json')
-    async create(@Body() data: Omit<UserDto, 'id'> & { passwordRepeat: string }): Promise<string> {
+    async create(@Body() data: CreateUserBody): Promise<string> {
         if (!data.email || !data.fullName || !data.password || !data.passwordRepeat) {
             throw new BadRequestException('Fields "email", "fullName" and "password" are required')
         }

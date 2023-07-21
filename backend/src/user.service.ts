@@ -3,6 +3,8 @@ import { PrismaService } from "./prisma.service"
 import { User, Prisma } from '@prisma/client'
 import type UserDto from "./user.dto"
 
+export type CreateUser = Omit<UserDto, 'id' | 'role'>
+
 @Injectable()
 export class UserService {
     constructor(private prisma: PrismaService) {}
@@ -26,7 +28,7 @@ export class UserService {
         return await this.prisma.user.findMany(args)
     }
 
-    async create(data: Omit<UserDto, 'id'>): Promise<User> {
+    async create(data: CreateUser): Promise<User> {
         return await this.prisma.user.create({ data })
     }
 

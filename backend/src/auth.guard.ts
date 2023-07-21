@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common'
 import { IncomingMessage } from 'http'
 import * as jwt from 'jsonwebtoken'
-import UserDto from './user.dto'
+import UserDto, { UserRole, UserRoleEnum } from './user.dto'
 import { UserService } from './user.service'
 import { PrismaService } from './prisma.service'
 
@@ -9,6 +9,8 @@ const AUTH_SECRET = process.env.AUTH_SECRET
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+    privilegedRoles = [ UserRoleEnum.ADMIN ] as UserRole[]
+
     getUserService(): UserService {
         const prismaService = new PrismaService()
         return new UserService(prismaService)
@@ -26,8 +28,8 @@ export class AuthGuard implements CanActivate {
         }
     }
 
-    validateUser(user: UserDto): boolean {
-        return user.id === 1
+    validateUserRole(user: UserDto): boolean {
+        return this.privilegedRoles.includes(user.role)
     }
 
     async canActivate(
@@ -45,7 +47,7 @@ export class AuthGuard implements CanActivate {
         const id = payload.id
         const user = await userService.get({ id })
 
-        if (this.validateUser(user)) {
+        if (this.validateUserRole(user)) {
             return true
         }
         else {
