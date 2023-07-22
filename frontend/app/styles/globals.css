@@ -176,3 +176,11 @@ header a {
 .buttons > a:not(:last-child) {
     margin-right: 1em;
 }
+
+.not-found-page h2 { 
+    margin-bottom: 1.5em;
+}
+
+.not-found-page p {
+    margin-bottom: 1em;
+}
