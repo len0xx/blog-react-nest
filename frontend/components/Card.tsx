@@ -22,7 +22,7 @@ export default function CardComponent({ title, text, id }: CardProps) {
                     <Content content={ text } />
                 </div>	
 				<div className='card-footer'>
-					<a href={ `/${ id }` }><Button size="small" appearance="default" marginRight={ 10 }>Open</Button></a>
+					<a href={ `/post/${ id }` }><Button size="small" appearance="default" marginRight={ 10 }>Open</Button></a>
 				</div>
 			</div>
 		</div>
