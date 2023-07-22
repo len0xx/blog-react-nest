@@ -5,6 +5,7 @@ import {
     Delete,
     Get,
     Header,
+    Headers,
     HttpCode,
     HttpStatus,
     NotFoundException,
@@ -18,6 +19,8 @@ import { PostService } from './post.service'
 import PostDto from './post.dto'
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from './auth.guard'
+import { Authorization } from './auth.utilities'
+import { User } from '@prisma/client'
 
 @Controller('api/post')
 export class PostController {
@@ -39,7 +42,7 @@ export class PostController {
     @ApiTags('blog')
     @ApiCreatedResponse({ description: 'New post created successfully'})
     @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid'})
-    async createPost(@Body() data: PostDto): Promise<string> {
+    async createPost(@Body() data: PostDto, @Authorization() user: Omit<User, 'password'>): Promise<string> {
         if (
             !data.title ||
             !data.content ||
@@ -61,6 +64,7 @@ export class PostController {
         }
 
         try {
+            data.authorId = user.id
             const post = await this.postService.create(data)
             return JSON.stringify(post)
         } catch (e) {

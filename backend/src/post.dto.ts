@@ -7,4 +7,6 @@ export default class PostDto {
     content: string
     @ApiProperty()
     published: boolean
+    @ApiProperty()
+    authorId: number
 }
