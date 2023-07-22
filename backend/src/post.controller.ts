@@ -5,7 +5,6 @@ import {
     Delete,
     Get,
     Header,
-    Headers,
     HttpCode,
     HttpStatus,
     NotFoundException,

@@ -22,15 +22,20 @@ export async function decodeToken(token: string): Promise<User | null> {
     }
 }
 
-export const Authorization = createParamDecorator(async (_data: unknown, ctx: ExecutionContext): Promise<User | null> => {
-    const request = ctx.switchToHttp().getRequest() as IncomingMessage
-    const { authorization: accessToken } = request.headers
-    
-    try {
-        const user = await decodeToken(accessToken)
-        delete user.password
-        return user
-    } catch (e) {
-        return null
+export const Authorization = createParamDecorator(
+    async (
+        _data: unknown,
+        ctx: ExecutionContext
+    ): Promise<User | null> => {
+        const request = ctx.switchToHttp().getRequest() as IncomingMessage
+        const { authorization: accessToken } = request.headers
+
+        try {
+            const user = await decodeToken(accessToken)
+            delete user.password
+            return user
+        } catch (e) {
+            return null
+        }
     }
-})
+)
