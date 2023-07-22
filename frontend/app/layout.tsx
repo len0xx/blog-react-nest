@@ -4,6 +4,7 @@ import { Inter } from 'next/font/google'
 import { NextAuthProvider } from "./providers"
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
+import LogOut from '@/components/LogOut'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -27,13 +28,18 @@ export default async function RootLayout({
                     <main>
                         <header>
                             <div className="header-title"><a href="/">Blog</a></div>
-                            <div>
-                                { authenticated && <a href="/new"><Button>New Post</Button></a> }
-                                { !authenticated &&
-                                    <div className='buttons'>
+                            <div className='buttons'>
+                                { authenticated ? 
+                                    <>
+                                        <a href="/new"><Button>New Post</Button></a>
+                                        <a href="/profile"><Button appearance='default'>Profile</Button></a>
+                                        <LogOut />
+                                    </>
+                                    :
+                                    <>
                                         <a href="/login"><Button>Log in</Button></a>
                                         <a href="/reg"><Button appearance='default'>Sign Up</Button></a>
-                                    </div>
+                                    </>
                                 }
                             </div>
                         </header>
