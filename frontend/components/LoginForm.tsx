@@ -1,8 +1,11 @@
 'use client'
 
+import { ValidationError, ValidationSchema, validateSchema } from '@/util'
 import { Button, TextInput, InlineAlert } from 'evergreen-ui'
 import { signIn, signOut, useSession } from 'next-auth/react'
 import { FormEvent, useRef, useState } from 'react'
+
+const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
 
 export default function LoginForm() {
     const [ success, setSuccess ] = useState(false)
@@ -13,16 +16,45 @@ export default function LoginForm() {
     const passwordInput = useRef<HTMLInputElement>(null)
     const { data: session } = useSession()
 
+    const successState = () => {
+        setIsLoading(false)
+        setError(false)
+        setErrorText('')
+        setSuccess(true)
+    }
+
+    const errorState = (message: string) => {
+        setIsLoading(false)
+        setSuccess(false)
+        setError(true)
+        setErrorText(message)
+    }
+
     const auth = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
+
         const email = emailInput.current!.value.toString()
         const password = passwordInput.current!.value.toString()
-        if (!email || !password) {
-            setSuccess(false)
-            setError(true)
-            setErrorText('Please fill in all the fields')
-            return
+
+        const schema: ValidationSchema = {
+            email: {
+                required: true,
+                matchRegex: emailRegex,
+                errorText: 'Please enter a correct email address'
+            },
+            password: {
+                required: true,
+                minLen: 6,
+                maxLen: 30
+            }
+        }
+
+        try {
+            validateSchema(schema, { email, password })
+        }
+        catch (e) {
+            return e instanceof ValidationError ? errorState(e.message) : console.error(e)
         }
 
         const options = {
@@ -33,29 +65,27 @@ export default function LoginForm() {
         const response = await signIn('credentials', options)
         
         if (!response!.error) {
-            setIsLoading(false)
-            setSuccess(true)
-            setError(false)
+            successState()
             setTimeout(() => window.location.href = '/', 1000)
         }
         else {
-            setIsLoading(false)
-            setError(true)
-            setSuccess(false)
-            setErrorText(response!.error || 'An error occurred. Please try again later')
+            errorState(response!.error || 'An error occurred. Please try again later')
         }
     }
 
     return (
-        <form onSubmit={ auth } className="auth-form">
-            <TextInput name="email" type="text" placeholder="Email" ref={ emailInput } />
-            <TextInput name="password" type="password" placeholder="Password" ref={ passwordInput } />
-            <div className="buttons">
-                <Button type="submit" isLoading={ isLoading } appearance="primary">Log in</Button>
-                { session && session.user && <Button type="button" appearance="default" onClick={ () => signOut() }>Log out</Button> }
-            </div>
-            { success && <InlineAlert intent='success'>You have successfully logged in!</InlineAlert> }
-            { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
-        </form>
+        <div className="center-content">
+            <form onSubmit={ auth } className="auth-form">
+                <h2>Log In</h2>
+                <TextInput name="email" type="text" placeholder="Email" required width={ 300 } ref={ emailInput } />
+                <TextInput name="password" type="password" placeholder="Password" required width={ 300 } ref={ passwordInput } />
+                <div className="buttons">
+                    <Button type="submit" isLoading={ isLoading } appearance="primary">Log in</Button>
+                    { session && session.user && <Button type="button" appearance="default" onClick={ () => signOut() }>Log out</Button> }
+                </div>
+                { success && <InlineAlert intent='success'>You have successfully logged in!</InlineAlert> }
+                { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
+            </form>
+        </div>
     )
 }

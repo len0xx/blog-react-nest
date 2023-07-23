@@ -164,12 +164,19 @@ header a {
     text-decoration: none;
 }
 
+.center-content {
+    display: grid;
+    position: relative;
+    justify-content: center;
+}
+
 .auth-form {
     display: grid;
     position: relative;
+    justify-content: start;
     grid-gap: 1em;
-    justify-content: center;
     padding: 2em 0;
+    max-width: 300px;
 }
 
 .buttons > button:not(:last-child),
