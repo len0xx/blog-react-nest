@@ -2,7 +2,7 @@
 
 import { Button, TextInput, InlineAlert } from 'evergreen-ui'
 import { signIn, signOut, useSession } from 'next-auth/react'
-import { useRef, useState } from 'react'
+import { FormEvent, useRef, useState } from 'react'
 
 export default function LoginForm() {
     const [ success, setSuccess ] = useState(false)
@@ -13,7 +13,8 @@ export default function LoginForm() {
     const passwordInput = useRef<HTMLInputElement>(null)
     const { data: session } = useSession()
 
-    const auth = async () => {
+    const auth = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         setIsLoading(true)
         const email = emailInput.current!.value.toString()
         const password = passwordInput.current!.value.toString()
@@ -46,15 +47,15 @@ export default function LoginForm() {
     }
 
     return (
-        <div className="auth-form">
+        <form onSubmit={ auth } className="auth-form">
             <TextInput name="email" type="text" placeholder="Email" ref={ emailInput } />
             <TextInput name="password" type="password" placeholder="Password" ref={ passwordInput } />
             <div className="buttons">
-                <Button isLoading={ isLoading } appearance="primary" onClick={ auth }>Log in</Button>
-                { session && session.user && <Button appearance="default" onClick={ () => signOut() }>Log out</Button> }
+                <Button type="submit" isLoading={ isLoading } appearance="primary">Log in</Button>
+                { session && session.user && <Button type="button" appearance="default" onClick={ () => signOut() }>Log out</Button> }
             </div>
             { success && <InlineAlert intent='success'>You have successfully logged in!</InlineAlert> }
             { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
-        </div>
+        </form>
     )
 }

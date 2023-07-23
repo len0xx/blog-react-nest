@@ -2,7 +2,7 @@
 
 import { API_ENDPOINT } from '@/config'
 import { Button, InlineAlert, TextInput } from 'evergreen-ui'
-import { useRef, useState } from 'react'
+import { FormEvent, useRef, useState } from 'react'
 
 export default function RegForm() {
     const [ success, setSuccess ] = useState(false)
@@ -15,7 +15,8 @@ export default function RegForm() {
     const passwordInput = useRef<HTMLInputElement>(null)
     const passwordRepeatInput = useRef<HTMLInputElement>(null)
 
-    const signUp = async () => {
+    const signUp = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
         setIsLoading(true)
         const data = {
             email: emailInput.current!.value.toString(),
@@ -49,18 +50,18 @@ export default function RegForm() {
     }
 
     return (
-        <div className="auth-form">
+        <form onSubmit={ signUp } className="auth-form">
             <TextInput name="email" type="email" placeholder="Email" ref={ emailInput } />
             <TextInput name="firstName" type="text" placeholder="First Name" ref={ firstNameInput } />
             <TextInput name="lastName" type="text" placeholder="Last Name" ref={ lastNameInput } />
             <TextInput name="password" type="password" placeholder="Password" ref={ passwordInput } />
             <TextInput name="password-repeat" type="password" placeholder="Repeat the password" ref={ passwordRepeatInput } />
             <div className="buttons">
-                <Button isLoading={ isLoading } appearance="primary" onClick={ signUp }>Sign Up</Button>
-                <a href="/login"><Button appearance="default">Log in</Button></a>
+                <Button type="submit" isLoading={ isLoading } appearance="primary">Sign Up</Button>
+                <a href="/login"><Button type="button" appearance="default">Log in</Button></a>
             </div>
             { success && <InlineAlert intent='success'>You have successfully signed up!</InlineAlert> }
             { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
-        </div>
+        </form>
     )
 }
