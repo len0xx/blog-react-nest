@@ -36,7 +36,8 @@ export const authOptions: NextAuthOptions = {
                     return res
                 }
                 else {
-                    throw new Error('Could not authorize') 
+                    const error = res.message || 'Could not authorize'
+                    throw new Error(error)
                 }
             }
         })

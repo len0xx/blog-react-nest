@@ -58,27 +58,21 @@ export class UserController {
             throw new UnauthorizedException('Unauthorized application')
         }
 
-        try {
-            const user = await this.userService.getByEmail(data.email)
-            if (!user) throw new BadRequestException('Invalid "email" or "password"')
+        const user = await this.userService.getByEmail(data.email)
+        if (!user) throw new BadRequestException('Invalid "email" or "password"')
 
-            const match = await compare(data.password, user.password)
-            if (!match) throw new BadRequestException('Invalid "email" or "password"')
-            
-            const payload: Record<string, string | number> = {
-                id: user.id,
-                email: user.email,
-                firstName: user.firstName,
-                lastName: user.lastName,
-                fullName: user.fullName
-            }
-            const token = jwt.sign(payload, NEST_AUTH_SECRET, { expiresIn: 7 * 24 * 60 * 60 })
-            payload.backendToken = token
-            return JSON.stringify(payload)
+        const match = await compare(data.password, user.password)
+        if (!match) throw new BadRequestException('Invalid "email" or "password"')
+
+        const payload: Record<string, string | number> = {
+            id: user.id,
+            email: user.email,
+            firstName: user.firstName,
+            lastName: user.lastName,
+            fullName: user.fullName
         }
-        catch (e) {
-            console.error(e)
-            throw new BadRequestException('An internal error occurred during the authorization process. Please try again later')
-        }
+        const token = jwt.sign(payload, NEST_AUTH_SECRET, { expiresIn: 7 * 24 * 60 * 60 })
+        payload.backendToken = token
+        return JSON.stringify(payload)
     }
 }
