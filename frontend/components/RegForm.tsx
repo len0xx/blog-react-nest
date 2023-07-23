@@ -8,6 +8,7 @@ export default function RegForm() {
     const [ success, setSuccess ] = useState(false)
     const [ error, setError ] = useState(false)
     const [ errorText, setErrorText ] = useState('')
+    const [ isLoading, setIsLoading ] = useState(false)
     const emailInput = useRef<HTMLInputElement>(null)
     const firstNameInput = useRef<HTMLInputElement>(null)
     const lastNameInput = useRef<HTMLInputElement>(null)
@@ -15,6 +16,7 @@ export default function RegForm() {
     const passwordRepeatInput = useRef<HTMLInputElement>(null)
 
     const signUp = async () => {
+        setIsLoading(true)
         const data = {
             email: emailInput.current!.value.toString(),
             firstName: firstNameInput.current!.value.toString(),
@@ -33,11 +35,13 @@ export default function RegForm() {
         const response = await res.json()
 
         if (res.ok && response.created) {
+            setIsLoading(false)
             setSuccess(true)
             setError(false)
             setTimeout(() => window.location.href = '/login', 1000)
         }
         else {
+            setIsLoading(false)
             setSuccess(false)
             setError(true)
             setErrorText(response.message || 'An error occurred. Please try again later')
@@ -52,7 +56,7 @@ export default function RegForm() {
             <TextInput name="password" type="password" placeholder="Password" ref={ passwordInput } />
             <TextInput name="password-repeat" type="password" placeholder="Repeat the password" ref={ passwordRepeatInput } />
             <div className="buttons">
-                <Button appearance="primary" onClick={ signUp }>Sign Up</Button>
+                <Button isLoading={ isLoading } appearance="primary" onClick={ signUp }>Sign Up</Button>
                 <a href="/login"><Button appearance="default">Log in</Button></a>
             </div>
             { success && <InlineAlert intent='success'>You have successfully signed up!</InlineAlert> }
