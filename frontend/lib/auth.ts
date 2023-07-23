@@ -45,6 +45,8 @@ export const authOptions: NextAuthOptions = {
         jwt({ token, user }) {
             if (user) {
                 token.id = +user.id
+                token.firstName = user.firstName
+                token.lastName = user.lastName
                 token.fullName = user.fullName
                 token.backendToken = user.backendToken
             }
@@ -52,8 +54,10 @@ export const authOptions: NextAuthOptions = {
         },
         session({ session, token }) {
             if (session && token) {
-                session.user.fullName = token.fullName
                 session.user.id = token.id
+                session.user.firstName = token.firstName
+                session.user.lastName = token.lastName
+                session.user.fullName = token.fullName
                 session.user.backendToken = token.backendToken
             }
             return session

@@ -1,6 +1,6 @@
 import * as jwt from 'jsonwebtoken'
 import { User } from "@prisma/client"
-import { UserService } from './user.service'
+import { ExtendedUser, UserService } from './user.service'
 import { PrismaService } from './prisma.service'
 import { ExecutionContext, createParamDecorator } from '@nestjs/common'
 import UserDto from './user.dto'
@@ -8,7 +8,7 @@ import { IncomingMessage } from 'http'
 
 const AUTH_SECRET = process.env.AUTH_SECRET
 
-export async function decodeToken(token: string): Promise<User | null> {
+export async function decodeToken(token: string): Promise<ExtendedUser | null> {
     const prismaService = new PrismaService()
     const userService = new UserService(prismaService)
 

@@ -9,14 +9,16 @@ export default function RegForm() {
     const [ error, setError ] = useState(false)
     const [ errorText, setErrorText ] = useState('')
     const emailInput = useRef<HTMLInputElement>(null)
-    const nameInput = useRef<HTMLInputElement>(null)
+    const firstNameInput = useRef<HTMLInputElement>(null)
+    const lastNameInput = useRef<HTMLInputElement>(null)
     const passwordInput = useRef<HTMLInputElement>(null)
     const passwordRepeatInput = useRef<HTMLInputElement>(null)
 
     const signUp = async () => {
         const data = {
             email: emailInput.current!.value.toString(),
-            fullName: nameInput.current!.value.toString(),
+            firstName: firstNameInput.current!.value.toString(),
+            lastName: lastNameInput.current!.value.toString(),
             password: passwordInput.current!.value.toString(),
             passwordRepeat: passwordRepeatInput.current!.value.toString()
         }
@@ -45,7 +47,8 @@ export default function RegForm() {
     return (
         <div className="auth-form">
             <TextInput name="email" type="email" placeholder="Email" ref={ emailInput } />
-            <TextInput name="fullName" type="text" placeholder="Full Name" ref={ nameInput } />
+            <TextInput name="firstName" type="text" placeholder="First Name" ref={ firstNameInput } />
+            <TextInput name="lastName" type="text" placeholder="Last Name" ref={ lastNameInput } />
             <TextInput name="password" type="password" placeholder="Password" ref={ passwordInput } />
             <TextInput name="password-repeat" type="password" placeholder="Repeat the password" ref={ passwordRepeatInput } />
             <div className="buttons">

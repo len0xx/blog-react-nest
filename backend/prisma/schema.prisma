@@ -20,7 +20,8 @@ model Post {
 model User {
     id          Int         @id @default(autoincrement())
     email       String      @db.VarChar(255) @unique()
-    fullName    String      @db.VarChar(255)
+    firstName   String?     @db.VarChar(255)
+    lastName    String?     @db.VarChar(255)
     password    String      @db.VarChar(512)
     role        Role        @default(USER)
     posts       Post[]
@@ -28,5 +29,6 @@ model User {
 
 enum Role {
     USER
+    AUTHOR
     ADMIN
 }

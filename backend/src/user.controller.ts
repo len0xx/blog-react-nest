@@ -16,8 +16,8 @@ export class UserController {
     @Post('create')
     @Header('Content-Type', 'application/json')
     async create(@Body() data: CreateUserBody): Promise<string> {
-        if (!data.email || !data.fullName || !data.password || !data.passwordRepeat) {
-            throw new BadRequestException('Fields "email", "fullName" and "password" are required')
+        if (!data.email || !data.firstName || !data.lastName || !data.password || !data.passwordRepeat) {
+            throw new BadRequestException('Fields "email", "firstName", "lastName" and "password" are required')
         }
 
         const existingUser = await this.userService.getByEmail(data.email)
@@ -35,7 +35,8 @@ export class UserController {
             const user = {
                 email: data.email,
                 password: data.password,
-                fullName: data.fullName
+                firstName: data.firstName,
+                lastName: data.lastName
             }
             await this.userService.create(user)
             return JSON.stringify({ created: true })
@@ -64,13 +65,16 @@ export class UserController {
             const match = await compare(data.password, user.password)
             if (!match) throw new BadRequestException('Invalid "email" or "password"')
             
-            const payload = {
+            const payload: Record<string, string | number> = {
                 id: user.id,
                 email: user.email,
+                firstName: user.firstName,
+                lastName: user.lastName,
                 fullName: user.fullName
             }
             const token = jwt.sign(payload, NEST_AUTH_SECRET, { expiresIn: 7 * 24 * 60 * 60 })
-            return JSON.stringify({ ...payload, backendToken: token })
+            payload.backendToken = token
+            return JSON.stringify(payload)
         }
         catch (e) {
             console.error(e)
