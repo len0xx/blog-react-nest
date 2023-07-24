@@ -11,52 +11,55 @@ interface Editor {
 }
 
 export default function NewForm({ session }: { session: Session }) {
-	const [success, setSuccess] = useState(false)
-	const [errorText, setErrorText] = useState('')
-	const [error, setError] = useState(false)
+    const [ success, setSuccess ] = useState(false)
+    const [ errorText, setErrorText ] = useState('')
+    const [ error, setError ] = useState(false)
+    const [ isLoading, setIsLoading ] = useState(false)
     const editor = useRef<Editor | null>(null)
-	const formRef = useRef<HTMLFormElement>(null)
+    const formRef = useRef<HTMLFormElement>(null)
     const titleInput = useRef<HTMLInputElement>(null)
 
     const createPost = () => formRef.current?.requestSubmit()
 
-	const submit = async (e: FormEvent<HTMLFormElement>) => {
-		e.preventDefault()
+    const submit = async (e: FormEvent<HTMLFormElement>) => {
+        e.preventDefault()
+        setIsLoading(true)
         const content = editor.current!.getJSON()
-		const post = {
-			title: titleInput.current!.value.toString(),
-			content: JSON.stringify(content),
-			published: 'true'
-		}
+        const post = {
+            title: titleInput.current!.value.toString(),
+            content: JSON.stringify(content),
+            published: 'true'
+        }
 
-		if (!post.title || !post.content) {
-			setSuccess(false)
-			setError(true)
-			setErrorText('Fields "Title" and "Content" can not be empty')
-			return
-		}
-		
-		const res = await fetch(`${API_ENDPOINT}/api/post`, {
-			method: 'POST',
-			headers: {
+        if (!post.title || !post.content) {
+            setSuccess(false)
+            setError(true)
+            setErrorText('Fields "Title" and "Content" can not be empty')
+            return
+        }
+
+        const res = await fetch(`${API_ENDPOINT}/api/post`, {
+            method: 'POST',
+            headers: {
                 'Content-Type': 'application/json',
                 'Authorization': session.user.backendToken
             },
-			body: JSON.stringify(post)
-		})
+            body: JSON.stringify(post)
+        })
         const response = await res.json()
 
-		if (res.ok) {
+        setIsLoading(false)
+        if (res.ok) {
             setSuccess(true)
             setError(false)
             setTimeout(() => window.location.href = '/', 1000)
-		}
-		else {
-			setSuccess(false)
-			setError(true)
-            setErrorText(response.error)
-		}
-	}
+        }
+        else {
+            setSuccess(false)
+            setError(true)
+            setErrorText(response.message || 'An error occurred while creating the post, please try again later')
+        }
+    }
 
     return (
         <>
@@ -66,19 +69,19 @@ export default function NewForm({ session }: { session: Session }) {
                     Content
                 </Label>
                 <TipTap ref={ editor } />
+                { success &&
+                    <InlineAlert intent="success" marginTop={16}>
+                        A post has been successfully created
+                    </InlineAlert>
+                }
+                { error &&
+                    <InlineAlert intent="danger" marginTop={16}>
+                        { errorText || 'An error occurred while creating the post. Please try again later' }
+                    </InlineAlert>
+                }
+                <br />
+                <Button appearance='primary' isLoading={ isLoading } onClick={ createPost }>Create</Button>
             </form>
-            { success &&
-                <InlineAlert intent="success" marginTop={16}>
-                    A post has been successfully created
-                </InlineAlert>
-            }
-            { error &&
-                <InlineAlert intent="danger" marginTop={16}>
-                    { errorText || 'An error occurred while creating the post. Please try again later' }
-                </InlineAlert>
-            }
-            <br />
-            <Button appearance='primary' onClick={ createPost }>Create</Button>
         </>
     )
 }
