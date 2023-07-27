@@ -19,6 +19,8 @@ export default class UserDto {
     @ApiProperty()
     fullName: string
     @ApiProperty()
+    about?: string
+    @ApiProperty()
     password: string
     @ApiProperty()
     role: UserRole

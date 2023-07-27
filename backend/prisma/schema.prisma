@@ -11,7 +11,7 @@ model Post {
     id            Int         @id @default(autoincrement())
     title         String      @db.VarChar(255)
     createdAt     DateTime    @default(now()) @db.Timestamp(6)
-    content       String?
+    content       String
     published     Boolean     @default(false)
     author        User        @relation(fields: [authorId], references: [id])
     authorId      Int
@@ -23,6 +23,7 @@ model User {
     firstName   String      @db.VarChar(255)
     lastName    String      @db.VarChar(255)
     password    String      @db.VarChar(512)
+    about       String?     @db.Text()
     role        Role        @default(USER)
     posts       Post[]
 }
