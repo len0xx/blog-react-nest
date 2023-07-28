@@ -2,7 +2,7 @@
 
 import { User } from "next-auth"
 import { useSession } from "next-auth/react"
-import { FormEvent, useEffect, useRef, useState } from "react"
+import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import styles from '@/app/styles/profile.module.css'
 import { TextareaField, TextInput, Button, Label, InlineAlert } from "evergreen-ui"
 import { API_ENDPOINT } from "@/config"
@@ -20,9 +20,9 @@ export default () => {
     const [ success, setSuccess ] = useState(false)
     const [ error, setError ] = useState(false)
     const [ errorText, setErrorText ] = useState('')
-    const firstNameInput = useRef<HTMLInputElement>(null)
-    const lastNameInput = useRef<HTMLInputElement>(null)
-    const aboutInput = useRef<HTMLTextAreaElement>(null)
+    const [ firstName, setFirstName ] = useState('')
+    const [ lastName, setLastName ] = useState('')
+    const [ about, setAbout ] = useState('')
 
     const switchMode = () => {
         if (mode === AllowedModes.Viewing) {
@@ -37,11 +37,7 @@ export default () => {
         e.preventDefault()
         setIsLoading(true)
 
-        const data = {
-            firstName: firstNameInput.current!.value.toString(),
-            lastName: lastNameInput.current!.value.toString(),
-            about: aboutInput.current!.value.toString() 
-        }
+        const data = { firstName, lastName, about }
 
         const options: RequestInit = {
             method: 'PATCH',
@@ -75,11 +71,19 @@ export default () => {
             
             fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
                 res.json().then((response) => {
+                    let localUser: User | null = null
                     if (res.ok && response) {
                         response.backendToken = token
+                        localUser = response
                         setUser(response)
                     }
-                    else setUser(session.user)
+                    else {
+                        localUser = session.user
+                        setUser(session.user)
+                    }
+                    setFirstName(localUser!.firstName!)
+                    setLastName(localUser!.lastName!)
+                    setAbout(localUser!.about!)
                 })
             })
         }
@@ -104,19 +108,19 @@ export default () => {
                             <Label className="form-label" htmlFor="firstName" marginBottom={ 4 } display="block">
                                 First Name
                             </Label>
-                            <TextInput name="firstName" placeholder="First Name" width={ 400 } ref={ firstNameInput } />
+                            <TextInput name="firstName" placeholder="First Name" width={ 400 } defaultValue={ firstName } onChange={ (e: ChangeEvent<HTMLInputElement>) => setFirstName(e.target!.value) } />
                             <br />
                             <br />
                             <Label className="form-label" htmlFor="lastName" marginBottom={ 4 } display="block">
                                 Last Name
                             </Label>
-                            <TextInput name="lastName" placeholder="Last Name" width={ 400 } ref={ lastNameInput } />
+                            <TextInput name="lastName" placeholder="Last Name" width={ 400 } defaultValue={ lastName } onChange={ (e: ChangeEvent<HTMLInputElement>) => setLastName(e.target!.value) } />
                             <br />
                             <br />
                             <Label className="form-label" htmlFor="lastName" display="block">
                                 About
                             </Label>
-                            <TextareaField name="about" marginBottom={ 0 } maxWidth={ 400 } ref={ aboutInput } />
+                            <TextareaField name="about" marginBottom={ 0 } maxWidth={ 400 } defaultValue={ about } onChange={ (e: ChangeEvent<HTMLTextAreaElement>) => setAbout(e.target!.value) } />
                             <br />
                             <div className={ styles.buttons }>
                                 <Button type="submit" appearance="primary" className={ styles.actionButton } isLoading={ isLoading }>Save</Button>
