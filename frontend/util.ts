@@ -7,6 +7,14 @@ export class HTTPError extends Error {
     }
 }
 
+export interface Post {
+    id: number
+    title: string
+    content: string
+    authorId: number
+    published: boolean
+}
+
 export interface ValidationRule<T = any> {
     required?: boolean
     isNumeric?: boolean

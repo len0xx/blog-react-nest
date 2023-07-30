@@ -6,6 +6,8 @@ import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import styles from '@/app/styles/profile.module.css'
 import { TextareaField, TextInput, Button, Label, InlineAlert } from "evergreen-ui"
 import { API_ENDPOINT } from "@/config"
+import { Post } from "@/util"
+import Card from "./Card"
 
 enum AllowedModes {
     Viewing,
@@ -15,6 +17,7 @@ enum AllowedModes {
 export default () => {
     const { data: session } = useSession()
     const [ user, setUser ] = useState<User | null>(null)
+    const [ posts, setPosts ] = useState<Post[]>([])
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ success, setSuccess ] = useState(false)
@@ -70,8 +73,8 @@ export default () => {
             }
             
             fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
+                let localUser: User | null = null
                 res.json().then((response) => {
-                    let localUser: User | null = null
                     if (res.ok && response) {
                         response.backendToken = token
                         localUser = response
@@ -84,6 +87,14 @@ export default () => {
                     setFirstName(localUser!.firstName!)
                     setLastName(localUser!.lastName!)
                     setAbout(localUser!.about!)
+            
+                    fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }`, getOptions).then((res) => {
+                        res.json().then((response) => {
+                            if (res.ok && response && response.length) {
+                                setPosts(response)
+                            }
+                        })
+                    })
                 })
             })
         }
@@ -102,25 +113,51 @@ export default () => {
                             <div className={ styles.buttons }>
                                 <Button appearance="default" onClick={ switchMode }>Edit</Button>
                             </div>
+                            <br />
+                            <br />
+                            { posts.length && 
+                                <>
+                                    <h3 className={ styles.profileHeader }>{ user.fullName }'s posts ({ posts.length })</h3>
+                                    { posts.map(post => <Card key={ post.id } id={ post.id } title={ post.title } text={ post.content } />) }
+                                </>
+                            }
                         </>
                         :
                         <form onSubmit={ updateProfile }>
                             <Label className="form-label" htmlFor="firstName" marginBottom={ 4 } display="block">
                                 First Name
                             </Label>
-                            <TextInput name="firstName" placeholder="First Name" width={ 400 } defaultValue={ firstName } onChange={ (e: ChangeEvent<HTMLInputElement>) => setFirstName(e.target!.value) } />
+                            <TextInput
+                                name="firstName"
+                                placeholder="First Name"
+                                width={ 400 }
+                                defaultValue={ firstName }
+                                onChange={ (e: ChangeEvent<HTMLInputElement>) => setFirstName(e.target!.value) }
+                            />
                             <br />
                             <br />
                             <Label className="form-label" htmlFor="lastName" marginBottom={ 4 } display="block">
                                 Last Name
                             </Label>
-                            <TextInput name="lastName" placeholder="Last Name" width={ 400 } defaultValue={ lastName } onChange={ (e: ChangeEvent<HTMLInputElement>) => setLastName(e.target!.value) } />
+                            <TextInput 
+                                name="lastName"
+                                placeholder="Last Name"
+                                width={ 400 }
+                                defaultValue={ lastName } 
+                                onChange={ (e: ChangeEvent<HTMLInputElement>) => setLastName(e.target!.value) }
+                            />
                             <br />
                             <br />
                             <Label className="form-label" htmlFor="lastName" display="block">
                                 About
                             </Label>
-                            <TextareaField name="about" marginBottom={ 0 } maxWidth={ 400 } defaultValue={ about } onChange={ (e: ChangeEvent<HTMLTextAreaElement>) => setAbout(e.target!.value) } />
+                            <TextareaField
+                                name="about"
+                                marginBottom={ 0 }
+                                maxWidth={ 400 }
+                                defaultValue={ about }
+                                onChange={ (e: ChangeEvent<HTMLTextAreaElement>) => setAbout(e.target!.value) }
+                            />
                             <br />
                             <div className={ styles.buttons }>
                                 <Button type="submit" appearance="primary" className={ styles.actionButton } isLoading={ isLoading }>Save</Button>

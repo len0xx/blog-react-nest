@@ -12,6 +12,7 @@ import {
     ParseIntPipe,
     Patch,
     Post,
+    Query,
     UseGuards,
 } from '@nestjs/common'
 import { PostService } from './post.service'
@@ -19,7 +20,7 @@ import PostDto from './post.dto'
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from './auth.guard'
 import { Authorization } from './auth.utilities'
-import { User } from '@prisma/client'
+import { Prisma, User } from '@prisma/client'
 
 @Controller('api/post')
 export class PostController {
@@ -29,8 +30,9 @@ export class PostController {
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Read all the posts'})
-    async getPosts(): Promise<string> {
-        const posts = await this.postService.getAll({ orderBy: [ { id: 'desc' } ] })
+    async getPosts(@Query('author') author: string): Promise<string> {
+        const where: Prisma.PostWhereInput = !isNaN(+author) ? { authorId: +author } : {}
+        const posts = await this.postService.getAll({ where, orderBy: [ { id: 'desc' } ] })
         return JSON.stringify(posts)
     }
 
