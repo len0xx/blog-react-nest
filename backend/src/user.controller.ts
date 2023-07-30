@@ -1,28 +1,26 @@
-import { BadRequestException, Body, Controller, Get, Header, Patch, Post, UnauthorizedException } from "@nestjs/common"
+import { BadRequestException, Body, Controller, Get, Header, HttpCode, HttpStatus, Patch, Post, UnauthorizedException } from "@nestjs/common"
 import { UserService } from "./user.service"
-import { CreateUser } from "./user.service"
 import { compare, hash } from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { Authorization } from "./auth.utilities"
 import { User } from "@prisma/client"
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
+import { AuthUserDto, CreateUserDto, UpdateUserDto } from "./user.dto"
 
 const NEST_ACCESS_TOKEN = process.env.NEST_ACCESS_TOKEN as string
 const NEST_AUTH_SECRET = process.env.AUTH_SECRET as string
-
-type CreateUserBody = CreateUser & { passwordRepeat: string }
-type UpdateUserBody = {
-    firstName: string
-    lastName: string
-    about: string
-}
 
 @Controller('api/user')
 export class UserController {
     constructor( private readonly userService: UserService ) {}
 
     @Post('create')
+    @ApiTags('user')
     @Header('Content-Type', 'application/json')
-    async create(@Body() data: CreateUserBody): Promise<string> {
+    @HttpCode(HttpStatus.CREATED)
+    @ApiCreatedResponse({ description: 'A new user has been created'})
+    @ApiBadRequestResponse({ description: 'Missing required fields or invalid values (Nonmatching passwords or duplicated email)'})
+    async create(@Body() data: CreateUserDto): Promise<string> {
         if (!data.email || !data.firstName || !data.lastName || !data.password || !data.passwordRepeat) {
             throw new BadRequestException('Fields "email", "firstName", "lastName" and "password" are required')
         }
@@ -55,8 +53,12 @@ export class UserController {
     }
 
     @Post('auth')
+    @ApiTags('user')
     @Header('Content-Type', 'application/json')
-    async auth(@Body() data: { email?: string, password?: string, token?: string }): Promise<string> {
+    @ApiOkResponse({ description: 'User\'s data'})
+    @ApiBadRequestResponse({ description: 'Invalid email or password'})
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
+    async auth(@Body() data: AuthUserDto): Promise<string> {
         if (!data.email || !data.password) {
             throw new BadRequestException('Invalid "email" or "password"')
         }
@@ -84,8 +86,12 @@ export class UserController {
     }
 
     @Patch('update')
+    @ApiTags('user')
     @Header('Content-Type', 'application/json')
-    async update(@Body() data: UpdateUserBody, @Authorization() user: User): Promise<string> {
+    @ApiOkResponse({ description: 'User has been updated'})
+    @ApiBadRequestResponse({ description: 'Missing data ("firstName", "lastName" and "about")'})
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
+    async update(@Body() data: UpdateUserDto, @Authorization() user: User): Promise<string> {
         if (!data.firstName && !data.lastName && !data.about) {
             throw new BadRequestException('Missing data ("firstName", "lastName" and "about")')
         }
@@ -113,6 +119,10 @@ export class UserController {
 
     @Get()
     @Header('Content-Type', 'application/json')
+    @ApiTags('user')
+    @ApiOkResponse({ description: 'User\'s data'})
+    @ApiBadRequestResponse({ description: 'Could not fetch data for authorized user'})
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
     async get(@Authorization() user: User): Promise<string> {
         if (!user) {
             throw new UnauthorizedException('You must authorize first to access this resource')

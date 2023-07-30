@@ -25,3 +25,36 @@ export default class UserDto {
     @ApiProperty()
     role: UserRole
 }
+
+export class CreateUserDto {
+    @ApiProperty()
+    email: string
+    @ApiProperty()
+    firstName: string
+    @ApiProperty()
+    lastName: string
+    @ApiProperty()
+    password: string
+    @ApiProperty()
+    passwordRepeat: string
+}
+
+export class UpdateUserDto {
+    @ApiProperty()
+    email: string
+    @ApiProperty()
+    firstName: string
+    @ApiProperty()
+    lastName: string
+    @ApiProperty()
+    about?: string
+}
+
+export class AuthUserDto {
+    @ApiProperty()
+    email: string
+    @ApiProperty()
+    password: string
+    @ApiProperty()
+    token: string
+}

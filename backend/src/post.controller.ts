@@ -16,7 +16,7 @@ import {
     UseGuards,
 } from '@nestjs/common'
 import { PostService } from './post.service'
-import PostDto from './post.dto'
+import PostDto, { CreatePostDto } from './post.dto'
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags } from '@nestjs/swagger'
 import { AuthGuard } from './auth.guard'
 import { Authorization } from './auth.utilities'
@@ -43,7 +43,7 @@ export class PostController {
     @ApiTags('blog')
     @ApiCreatedResponse({ description: 'New post created successfully'})
     @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid'})
-    async createPost(@Body() data: PostDto, @Authorization() user: Omit<User, 'password'>): Promise<string> {
+    async createPost(@Body() data: CreatePostDto, @Authorization() user: Omit<User, 'password'>): Promise<string> {
         if (
             !data.title ||
             !data.content ||
@@ -65,8 +65,8 @@ export class PostController {
         }
 
         try {
-            data.authorId = user.id
-            const post = await this.postService.create(data)
+            const postData: PostDto = { ...data, authorId: user.id }
+            const post = await this.postService.create(postData)
             return JSON.stringify(post)
         } catch (e) {
             console.error(e)
@@ -121,7 +121,6 @@ export class PostController {
     @ApiTags('blog')
     @ApiOkResponse({ description: 'New post created successfully'})
     @ApiNotFoundResponse({ description: 'No posts found with passed id'})
-    @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid'})
     async deletePost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
 

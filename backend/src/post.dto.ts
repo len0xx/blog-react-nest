@@ -10,3 +10,12 @@ export default class PostDto {
     @ApiProperty()
     authorId: number
 }
+
+export class CreatePostDto {
+    @ApiProperty()
+    title: string
+    @ApiProperty()
+    content: string
+    @ApiProperty()
+    published: boolean
+}
