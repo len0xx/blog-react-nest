@@ -46,18 +46,18 @@ export default function NewForm({ session }: { session: Session }) {
             },
             body: JSON.stringify(post)
         })
-        const response = await res.json()
 
         setIsLoading(false)
-        if (res.ok) {
+        if (res.ok && res.status >= 200 && res.status < 300) {
             setSuccess(true)
             setError(false)
             setTimeout(() => window.location.href = '/', 1000)
         }
         else {
+            const error = res.status < 500 ? (await res.json()).message : 'An error occurred while creating the post, please try again later'
             setSuccess(false)
             setError(true)
-            setErrorText(response.message || 'An error occurred while creating the post, please try again later')
+            setErrorText(error)
         }
     }
 
