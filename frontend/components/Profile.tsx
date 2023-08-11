@@ -118,7 +118,9 @@ export default () => {
                             { posts.length && 
                                 <>
                                     <h3 className={ styles.profileHeader }>{ user.fullName }'s posts ({ posts.length })</h3>
-                                    { posts.map(post => <Card key={ post.id } id={ post.id } title={ post.title } text={ post.content } />) }
+                                    <div className="posts">
+                                        { posts.map(post => <Card key={ post.id } id={ post.id } title={ post.title } text={ post.content } />) }
+                                    </div>
                                 </>
                             }
                         </>
