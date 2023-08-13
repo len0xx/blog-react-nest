@@ -19,8 +19,6 @@ export default function NewForm({ session }: { session: Session }) {
     const formRef = useRef<HTMLFormElement>(null)
     const titleInput = useRef<HTMLInputElement>(null)
 
-    const createPost = () => formRef.current?.requestSubmit()
-
     const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
@@ -35,6 +33,7 @@ export default function NewForm({ session }: { session: Session }) {
             setSuccess(false)
             setError(true)
             setErrorText('Fields "Title" and "Content" can not be empty')
+            setIsLoading(false)
             return
         }
 
@@ -80,7 +79,7 @@ export default function NewForm({ session }: { session: Session }) {
                     </InlineAlert>
                 }
                 <br />
-                <Button appearance='primary' isLoading={ isLoading } onClick={ createPost }>Create</Button>
+                <Button appearance='primary' isLoading={ isLoading } type="submit">Create</Button>
             </form>
         </>
     )

@@ -17,6 +17,7 @@ import Underline from '@tiptap/extension-underline'
 import 'highlight.js/styles/github-dark.css'
 import hljs from 'highlight.js'
 import '@/app/styles/tiptap.css'
+import Strike from '@tiptap/extension-strike'
 
 interface ComponentProps {
 	content: string
@@ -42,6 +43,7 @@ export default function Content({ content }: ComponentProps) {
                 BulletItem,
                 Link,
                 Underline,
+                Strike,
                 CodeBlockLowlight.configure({
                     HTMLAttributes: {
                         class: 'post-code-block'
