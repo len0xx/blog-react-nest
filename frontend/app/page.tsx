@@ -33,6 +33,8 @@ export default async ({ searchParams }: { searchParams: { [key: string]: string 
 
 	return (
 		<>
+            <h2>Most recent posts</h2>
+            <br />
 			{ posts && posts.length ? (
                 <Posts posts={ posts } pages={ pages } />
 			) : ( 
