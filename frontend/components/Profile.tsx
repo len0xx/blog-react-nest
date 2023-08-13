@@ -14,9 +14,11 @@ enum AllowedModes {
     Editing
 }
 
+type LocalUser = Omit<User, 'backendToken'>
+
 export default ({ page }: { page: number }) => {
     const { data: session } = useSession()
-    const [ user, setUser ] = useState<User | null>(null)
+    const [ user, setUser ] = useState<LocalUser | null>(null)
     const [ posts, setPosts ] = useState<Post[]>([])
     const [ pages, setPages ] = useState<number>(1)
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
@@ -37,6 +39,19 @@ export default ({ page }: { page: number }) => {
         }
     }
 
+    const fetchUser = async () => {
+        const token = session!.user.backendToken
+        const getOptions = {
+            method: 'GET',
+            headers: { 'Content-Type': 'application/json', 'Authorization': token }
+        }
+
+        const res = await fetch(`${ API_ENDPOINT }/api/user`, getOptions)
+        if (!res.ok) return null
+        const response = await res.json()
+        setUser(response)
+    }
+
     const updateProfile = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
@@ -45,7 +60,7 @@ export default ({ page }: { page: number }) => {
 
         const options: RequestInit = {
             method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', 'Authorization': user!.backendToken! },
+            headers: { 'Content-Type': 'application/json', 'Authorization': session!.user.backendToken! },
             body: JSON.stringify(data)
         }
 
@@ -56,6 +71,7 @@ export default ({ page }: { page: number }) => {
         if (res.ok && response.updated) {
             setError(false)
             setSuccess(true)
+            await fetchUser()
         }
         else {
             setSuccess(false)
@@ -74,10 +90,9 @@ export default ({ page }: { page: number }) => {
             }
             
             fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
-                let localUser: User | null = null
+                let localUser: LocalUser | null = null
                 res.json().then((response) => {
                     if (res.ok && response) {
-                        response.backendToken = token
                         localUser = response
                         setUser(response)
                     }
