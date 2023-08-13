@@ -14,7 +14,8 @@ interface PostsResponse {
 }
 
 const getData = async (page = 1): Promise<PostsResponse> => {
-	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post?page=${ page }`, { cache: 'no-store' })
+    const url = `${ API_ENDPOINT_BACK }/api/post?page=${ page }`
+	const res = await fetch(url, { cache: 'no-store' })
 
 	if (!res.ok) {
 		throw new Error('Failed to fetch data')

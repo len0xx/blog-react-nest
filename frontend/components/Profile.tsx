@@ -175,7 +175,6 @@ export default ({ page }: { page: number }) => {
                             { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
                         </form>
                     }
-                    
                 </>
             }
         </>
