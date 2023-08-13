@@ -44,7 +44,7 @@ export interface ObjectHasLength extends Object {
     length: number
 }
 
-export const validateSchema = (schema: ValidationSchema, data: Record<string, unknown>): boolean => {
+export const validateSchema = <T>(schema: ValidationSchema, data: Record<string, T>): boolean => {
     for (const key in schema) {
         const rule = schema[key]
         const val = data[key]
