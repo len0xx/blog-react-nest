@@ -1,4 +1,4 @@
-import Card from '@/components/Card'
+import Posts from '@/components/Posts'
 import { API_ENDPOINT_BACK } from '@/config'
 
 interface Post {
@@ -8,27 +8,32 @@ interface Post {
 	published: boolean
 }
 
-const getData = async (): Promise<Post[]> => {
-	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post`, { cache: 'no-store' })
+interface PostsResponse {
+    posts: Post[]
+    pages: number
+}
+
+const getData = async (page = 1): Promise<PostsResponse> => {
+	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post?page=${ page }`, { cache: 'no-store' })
 
 	if (!res.ok) {
 		throw new Error('Failed to fetch data')
 	}
 
-	return res.json()
+    const response = await res.json()
+	return response
 }
 
-export default async () => {
-	const data = await getData()
+export default async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+    const page = searchParams['page'] && !isNaN(+searchParams['page']) ? +searchParams['page'] : 1
+	const data = await getData(page)
+    const posts = data.posts
+    const pages = data.pages
 
 	return (
 		<>
-			{ data && data.length ? (
-				<div className="posts">
-					{ data.map(post => 
-						<Card key={ post.id } id={ post.id } title={ post.title } text={ post.content } />)
-					}
-				</div>
+			{ posts && posts.length ? (
+                <Posts posts={ posts } pages={ pages } />
 			) : ( 
 				<p>No posts found</p>
 			)}

@@ -12,14 +12,20 @@ export class PostService {
     }
 
     async getAll(args?: {
-        select?: Prisma.PostSelect;
-        where?: Prisma.PostWhereInput;
-        orderBy?: Prisma.Enumerable<Prisma.PostOrderByWithRelationInput>;
-        cursor?: Prisma.PostWhereUniqueInput;
-        take?: number;
-        skip?: number;
+        select?: Prisma.PostSelect
+        where?: Prisma.PostWhereInput
+        orderBy?: Prisma.Enumerable<Prisma.PostOrderByWithRelationInput>
+        cursor?: Prisma.PostWhereUniqueInput
+        take?: number
+        skip?: number
     }): Promise<Post[]> {
         return await this.prisma.post.findMany(args)
+    }
+
+    async count(args?: {
+        where?: Prisma.PostWhereInput
+    }): Promise<number> {
+        return await this.prisma.post.count(args)
     }
 
     async create(data: PostDto): Promise<Post> {

@@ -7,17 +7,18 @@ import styles from '@/app/styles/profile.module.css'
 import { TextareaField, TextInput, Button, Label, InlineAlert } from "evergreen-ui"
 import { API_ENDPOINT } from "@/config"
 import { Post } from "@/util"
-import Card from "./Card"
+import Posts from "./Posts"
 
 enum AllowedModes {
     Viewing,
     Editing
 }
 
-export default () => {
+export default ({ page }: { page: number }) => {
     const { data: session } = useSession()
     const [ user, setUser ] = useState<User | null>(null)
     const [ posts, setPosts ] = useState<Post[]>([])
+    const [ pages, setPages ] = useState<number>(1)
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ success, setSuccess ] = useState(false)
@@ -69,7 +70,7 @@ export default () => {
             const token = session.user.backendToken
             const getOptions = {
                 method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Authorization': session.user.backendToken }
+                headers: { 'Content-Type': 'application/json', 'Authorization': token }
             }
             
             fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
@@ -88,17 +89,21 @@ export default () => {
                     setLastName(localUser!.lastName!)
                     setAbout(localUser!.about!)
             
-                    fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }`, getOptions).then((res) => {
+                    fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }&page=${ page }`, getOptions).then((res) => {
                         res.json().then((response) => {
-                            if (res.ok && response && response.length) {
-                                setPosts(response)
+                            if (res.ok && response && response.posts) {
+                                setPosts(response.posts)
+                                setPages(response.pages)
+                            }
+                            else {
+                                setPosts([])
                             }
                         })
                     })
                 })
             })
         }
-    }, [ session ])
+    }, [ session, page ])
 
     return (
         <>
@@ -117,10 +122,10 @@ export default () => {
                             <br />
                             { posts.length && 
                                 <>
-                                    <h3 className={ styles.profileHeader }>{ user.fullName }'s posts ({ posts.length })</h3>
-                                    <div className="posts">
-                                        { posts.map(post => <Card key={ post.id } id={ post.id } title={ post.title } text={ post.content } />) }
-                                    </div>
+                                    <h3 className={ styles.profileHeader }>
+                                        { user.fullName }'s posts ({ posts.length })
+                                    </h3>
+                                    <Posts posts={ posts } pages={ pages } />
                                 </>
                             }
                         </>
