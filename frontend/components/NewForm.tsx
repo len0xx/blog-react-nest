@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useRef, useState } from 'react'
-import { TextInput, Button, Label, InlineAlert } from 'evergreen-ui'
+import { Button, InlineAlert } from 'evergreen-ui'
 import { API_ENDPOINT } from '@/config'
 import TipTap from './TipTap'
 import { Session } from 'next-auth'
@@ -63,10 +63,7 @@ export default function NewForm({ session }: { session: Session }) {
     return (
         <>
             <form onSubmit={ submit } ref={ formRef }>
-                <TextInput width="100%" name="title" placeholder="Title" ref={ titleInput } /><br /><br />
-                <Label className="form-label" htmlFor="content" marginBottom={4} display="block">
-                    Content
-                </Label>
+                <input className='post-title' name="title" placeholder='Create a new post' ref={ titleInput } />
                 <TipTap ref={ editor } />
                 { success &&
                     <InlineAlert intent="success" marginTop={16}>

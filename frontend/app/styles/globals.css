@@ -44,6 +44,16 @@
     --header-background: rgb(204, 208, 208);
     --header-title-color: #000;
     --header-border: #C0C0C0;
+
+    --editor-title-active: #000;
+    --editor-title-inactive: #111;
+    --editor-content-color-active: #111;
+    --editor-content-color-inactive: #222;
+    --editor-bubble-bg: #FFF;
+    --editor-bubble-color: #222;
+    --editor-bubble-border: rgba(0, 0, 0, 0.2);
+    --editor-floating-bg: transparent;
+    --editor-floating-color: #444;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -82,6 +92,15 @@
         --header-background: #000;
         --header-title-color: #FFF;
         --header-border: #222;
+
+        --editor-title-active: #FFF;
+        --editor-title-inactive: #EEE;
+        --editor-content-color-active: #EEE;
+        --editor-content-color-inactive: #DDD;
+        --editor-bubble-bg: #111;
+        --editor-bubble-color: #DDD;
+        --editor-bubble-border: rgba(255, 255, 255, 0.2);
+        --editor-floating-color: #CCC;
     }
 
     nav[role="navigation"].ub-box-szg_border-box > ul > li > button:not([disabled]) {
@@ -114,6 +133,11 @@ body {
         )
         rgb(var(--background-start-rgb));
     min-height: 100vh;
+}
+
+input {
+    font-family: inherit;
+    outline: none;
 }
 
 a {
@@ -206,4 +230,22 @@ header a {
 
 .not-found-page p {
     margin-bottom: 1em;
+}
+
+input.post-title {
+    display: block;
+    position: relative;
+    width: 100%;
+    background: transparent;
+    color: var(--editor-title-inactive);
+    padding: 0.2em 0;
+    font-size: 2em;
+    font-weight: 600;
+    transition: 0.1s ease-in-out;
+    border: none;
+    margin-bottom: 0.5em;
+}
+
+input.post-title:focus {
+    color: var(--editor-title-active);
 }

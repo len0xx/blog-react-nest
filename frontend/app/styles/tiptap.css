@@ -1,11 +1,17 @@
 .editor-window {
-    padding: 1.2em 1em;
-    background: white;
-    color: black;
+    padding: 1.2em 0;
+    background: transparent;
+    color: var(--editor-content-color-inactive);
     border-radius: 0.5em;
 }
 
-.ProseMirror:focus-visible {
+.editor-window .ProseMirror {
+    color: var(--editor-content-color-inactive);
+    transition: color 0.1s ease-in-out;
+}
+
+.editor-window .ProseMirror:focus-visible {
+    color: var(--editor-content-color-active);
     outline: none;
 }
 
@@ -25,16 +31,16 @@ pre.post-code-block > code {
 
 .bubble-menu {
     display: flex;
-    background-color: #0D0D0D;
+    background-color: var(--editor-bubble-bg);
     padding: 0.2rem;
     border-radius: 0.25rem;
-    border: 1px solid rgba(255, 255, 255, 0.3);
+    border: 1px solid var(--editor-bubble-border);
 }
 
 .bubble-menu button {
     border: none;
     background: none;
-    color: #FFF;
+    color: var(--editor-bubble-color);
     cursor: pointer;
     font-size: 0.85rem;
     font-weight: 500;
@@ -49,7 +55,7 @@ pre.post-code-block > code {
 
 .floating-menu {
     display: flex;
-    background-color: #0D0D0D10;
+    background-color: var(--editor-floating-bg);
     padding: 0.2rem;
     border-radius: 0.5rem;
 }
@@ -58,7 +64,7 @@ pre.post-code-block > code {
     border: none;
     background: none;
     cursor: pointer;
-    color: black;
+    color: var(--editor-floating-color);
     font-size: 0.85rem;
     font-weight: 500;
     padding: 0 0.4rem;
