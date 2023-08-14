@@ -76,7 +76,7 @@ export default function NewForm({ session }: { session: Session }) {
                     </InlineAlert>
                 }
                 <br />
-                <Button appearance='primary' isLoading={ isLoading } type="submit">Create</Button>
+                <Button appearance='primary' isLoading={ isLoading } type="submit">Publish</Button>
             </form>
         </>
     )
