@@ -39,7 +39,7 @@ export class PostController {
         const posts = await this.postService.getAll({ where, orderBy: [ { id: 'desc' } ], skip: offset, take: POSTS_AMOUNT })
         const amount = await this.postService.count({ where })
         const pages = Math.floor(amount / POSTS_AMOUNT) + 1
-        return JSON.stringify({ posts, pages })
+        return JSON.stringify({ posts, pages, count: amount })
     }
 
     @Post()

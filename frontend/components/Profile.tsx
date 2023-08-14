@@ -21,6 +21,7 @@ export default ({ page }: { page: number }) => {
     const [ user, setUser ] = useState<LocalUser | null>(null)
     const [ posts, setPosts ] = useState<Post[]>([])
     const [ pages, setPages ] = useState<number>(1)
+    const [ count, setCount ] = useState<number>(0)
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ success, setSuccess ] = useState(false)
@@ -88,34 +89,37 @@ export default ({ page }: { page: number }) => {
                 method: 'GET',
                 headers: { 'Content-Type': 'application/json', 'Authorization': token }
             }
-            
+
             fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
                 let localUser: LocalUser | null = null
-                res.json().then((response) => {
-                    if (res.ok && response) {
-                        localUser = response
-                        setUser(response)
-                    }
-                    else {
-                        localUser = session.user
-                        setUser(session.user)
-                    }
-                    setFirstName(localUser!.firstName!)
-                    setLastName(localUser!.lastName!)
-                    setAbout(localUser!.about!)
-            
-                    fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }&page=${ page }`, getOptions).then((res) => {
-                        res.json().then((response) => {
-                            if (res.ok && response && response.posts) {
-                                setPosts(response.posts)
-                                setPages(response.pages)
-                            }
-                            else {
-                                setPosts([])
-                            }
+                if (res.ok) {
+                    res.json().then((response) => {
+                        if (response) {
+                            localUser = response
+                            setUser(response)
+                        }
+                        else {
+                            localUser = session.user
+                            setUser(session.user)
+                        }
+                        setFirstName(localUser!.firstName!)
+                        setLastName(localUser!.lastName!)
+                        setAbout(localUser!.about!)
+
+                        fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }&page=${ page }`, getOptions).then((res) => {
+                            res.json().then((response) => {
+                                if (res.ok && response && response.posts) {
+                                    setPosts(response.posts)
+                                    setPages(response.pages)
+                                    setCount(response.count)
+                                }
+                                else {
+                                    setPosts([])
+                                }
+                            })
                         })
                     })
-                })
+                }
             })
         }
     }, [ session, page ])
@@ -133,16 +137,6 @@ export default ({ page }: { page: number }) => {
                             <div className={ styles.buttons }>
                                 <Button appearance="default" onClick={ switchMode }>Edit</Button>
                             </div>
-                            <br />
-                            <br />
-                            { posts.length && 
-                                <>
-                                    <h3 className={ styles.profileHeader }>
-                                        { user.fullName }'s posts ({ posts.length })
-                                    </h3>
-                                    <Posts posts={ posts } pages={ pages } />
-                                </>
-                            }
                         </>
                         :
                         <form onSubmit={ updateProfile }>
@@ -189,6 +183,16 @@ export default ({ page }: { page: number }) => {
                             { success && <InlineAlert intent='success'>Changes have been saved!</InlineAlert> }
                             { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
                         </form>
+                    }
+                    <br />
+                    <br />
+                    { posts.length &&
+                        <>
+                            <h3 className={ styles.profileHeader }>
+                                { user.fullName }'s posts ({ count })
+                            </h3>
+                            <Posts posts={ posts } pages={ pages } />
+                        </>
                     }
                 </>
             }
