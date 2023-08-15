@@ -15,7 +15,7 @@ RUN pnpm install
 
 COPY next.config.js tsconfig.json config.ts util.ts middleware.ts .
 
-# COPY public ./public
+COPY public ./public
 COPY lib ./lib
 COPY types ./types
 COPY app ./app
@@ -29,6 +29,7 @@ RUN pnpm run build
 FROM base AS release
 COPY --from=builder /tmp/node_modules ./node_modules
 COPY --from=builder /frontend/.next ./.next
+COPY --from=builder /frontend/public ./public
 COPY --from=builder /frontend/package.json ./
 
 EXPOSE 3000

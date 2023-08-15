@@ -32,6 +32,7 @@ import { FormEvent } from 'react'
 import { isTextSelection } from '@tiptap/core'
 import type { EditorState } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
+import { default as NextImage } from 'next/image'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -195,43 +196,37 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                     <button
                         onClick={() => editor.chain().focus().toggleBold().run()}
                         type="button"
-                        className={editor.isActive('bold') ? 'is-active' : ''}
+                        className={ editor.isActive('bold') ? 'is-active' : '' }
                     >
-                        Bold
+                        <div className="editor-button-icon editor-icon-bold" title="Bold" />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleItalic().run()}
                         type="button"
                         className={editor.isActive('italic') ? 'is-active' : ''}
                     >
-                        Italic
+                        <div className="editor-button-icon editor-icon-italic" title="Italic" />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleUnderline().run()}
                         type="button"
                         className={editor.isActive('underline') ? 'is-active' : ''}
                     >
-                        Underline
+                        <div className="editor-button-icon editor-icon-underline" title="Underline" />
                     </button>
                     <button
                         onClick={() => editor.chain().focus().toggleStrike().run()}
                         type="button"
                         className={editor.isActive('strike') ? 'is-active' : ''}
                     >
-                        Strike
+                        <div className="editor-button-icon editor-icon-strike" title="Strikethrough" />
                     </button>
                     <button
                         onClick={openDialog}
                         type="button"
                         className={editor.isActive('link') ? 'is-active' : ''}
                     >
-                        Link
-                    </button>
-                    <button
-                        onClick={() => console.log(editor.getJSON())}
-                        type="button"
-                    >
-                        Debug 
+                        <div className="editor-button-icon editor-icon-link" title="Link" />
                     </button>
                 </BubbleMenuComponent>
             </div>}
@@ -272,7 +267,15 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                 <br />
                 <InlineAlert intent="danger">Error: { errorText }</InlineAlert>
             </>}
-            <input type="file" disabled name="tiptap-image-upload" ref={ fileInput } onInput={ fileSelected } style={{ display: 'none' }} accept="image/png, image/jpeg, image/svg+xml" />
+            <input
+                disabled
+                type="file"
+                name="tiptap-image-upload"
+                ref={ fileInput }
+                onInput={ fileSelected }
+                style={{ display: 'none' }}
+                accept="image/png, image/jpeg, image/svg+xml"
+            />
         </div>
     )
 

@@ -45,10 +45,13 @@ pre.post-code-block > code {
     font-size: 0.85rem;
     font-weight: 500;
     padding: 0 0.4rem;
-    opacity: 0.6;
+    opacity: 0.4;
 }
 
-.bubble-menu button:hover,
+.bubble-menu button:hover:not(.is-active) {
+    opacity: 0.65;
+}
+
 .bubble-menu button.is-active {
     opacity: 1;
 }
@@ -79,4 +82,44 @@ pre.post-code-block > code {
 .ProseMirror img,
 .post-content img {
     max-width: 100%;
+}
+
+.bubble-menu-wrapper button {
+    line-height: 1;
+    padding-bottom: 0;
+}
+
+img.editor-button-icon {
+    width: auto;
+    height: 1.5em;
+}
+
+div.editor-button-icon {
+    display: inline-block;
+    position: relative;
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    width: 1.5em;
+    height: 1.5em;
+}
+
+.editor-button-icon.editor-icon-bold {
+    background-image: var(--editor-button-bold);
+}
+
+.editor-button-icon.editor-icon-italic {
+    background-image: var(--editor-button-italic);
+}
+
+.editor-button-icon.editor-icon-underline {
+    background-image: var(--editor-button-underline);
+}
+
+.editor-button-icon.editor-icon-link {
+    background-image: var(--editor-button-link);
+}
+
+.editor-button-icon.editor-icon-strike {
+    background-image: var(--editor-button-strike);
 }

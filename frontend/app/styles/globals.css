@@ -54,6 +54,12 @@
     --editor-bubble-border: rgba(0, 0, 0, 0.2);
     --editor-floating-bg: transparent;
     --editor-floating-color: #444;
+
+    --editor-button-bold: url("/img/bold.svg");
+    --editor-button-italic: url("/img/italic.svg");
+    --editor-button-underline: url("/img/underline.svg");
+    --editor-button-strike: url("/img/strikethrough.svg");
+    --editor-button-link: url("/img/link.svg");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -101,6 +107,12 @@
         --editor-bubble-color: #DDD;
         --editor-bubble-border: rgba(255, 255, 255, 0.2);
         --editor-floating-color: #CCC;
+
+        --editor-button-bold: url("/img/bold-white.svg");
+        --editor-button-italic: url("/img/italic-white.svg");
+        --editor-button-underline: url("/img/underline-white.svg");
+        --editor-button-strike: url("/img/strikethrough-white.svg");
+        --editor-button-link: url("/img/link-white.svg");
     }
 
     nav[role="navigation"].ub-box-szg_border-box > ul > li > button:not([disabled]) {
@@ -253,3 +265,5 @@ input.post-title:focus {
 .post-page-content .post-page-author {
     opacity: 0.75;
 }
+
+
