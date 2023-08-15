@@ -191,7 +191,12 @@ export default ({ page }: { page: number }) => {
                             <h3 className={ styles.profileHeader }>
                                 { user.fullName }'s posts ({ count })
                             </h3>
-                            <Posts posts={ posts } pages={ pages } />
+                            <Posts
+                                posts={ posts }
+                                pages={ pages }
+                                editable={ true }
+                                token={ session ? session.user.backendToken : '' }
+                            />
                         </>
                     }
                 </>

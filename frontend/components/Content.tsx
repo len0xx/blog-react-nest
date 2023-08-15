@@ -24,7 +24,7 @@ interface ComponentProps {
 }
 
 export default function Content({ content }: ComponentProps) {
-    useEffect(() => hljs.highlightAll(), [])
+    useEffect(() => hljs.highlightAll())
 
     const jsonContent = JSON.parse(content)
 
@@ -51,7 +51,7 @@ export default function Content({ content }: ComponentProps) {
                 })
             ]
         ),
-        [jsonContent]
+        [ jsonContent ]
     )
 
 	return <div className="post-content" dangerouslySetInnerHTML={{ __html: text }} />

@@ -178,10 +178,11 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     return (
         <div className="editor-window">
             <Dialog
-                isShown={isDialogShown}
+                isShown={ isDialogShown }
                 title="Set link URL"
-                onCloseComplete={closeDialog}
+                onCloseComplete={ closeDialog }
                 confirmLabel="Confirm"
+                minHeightContent={ 0 }
             >
                 <TextInput
                     placeholder="https://example.com"
