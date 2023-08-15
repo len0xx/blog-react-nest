@@ -60,6 +60,10 @@
     --editor-button-underline: url("/img/underline.svg");
     --editor-button-strike: url("/img/strikethrough.svg");
     --editor-button-link: url("/img/link.svg");
+    --editor-button-image: url("/img/image.svg");
+    --editor-button-code: url("/img/code.svg");
+    --editor-button-list: url("/img/list.svg");
+    --editor-button-heading: url("/img/heading.svg");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -113,6 +117,10 @@
         --editor-button-underline: url("/img/underline-white.svg");
         --editor-button-strike: url("/img/strikethrough-white.svg");
         --editor-button-link: url("/img/link-white.svg");
+        --editor-button-image: url("/img/image-white.svg");
+        --editor-button-code: url("/img/code-white.svg");
+        --editor-button-list: url("/img/list-white.svg");
+        --editor-button-heading: url("/img/heading-white.svg");
     }
 
     nav[role="navigation"].ub-box-szg_border-box > ul > li > button:not([disabled]) {

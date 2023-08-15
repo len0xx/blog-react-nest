@@ -1,6 +1,6 @@
 'use client'
 
-import { FormEvent, useRef, useState } from 'react'
+import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Button, InlineAlert } from 'evergreen-ui'
 import { API_ENDPOINT } from '@/config'
 import TipTap from './TipTap'
@@ -59,6 +59,8 @@ export default function NewForm({ session }: { session: Session }) {
             setErrorText(error)
         }
     }
+
+    useEffect(() => titleInput.current!.focus())
 
     return (
         <>

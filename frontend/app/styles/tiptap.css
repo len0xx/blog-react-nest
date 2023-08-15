@@ -59,7 +59,7 @@ pre.post-code-block > code {
 .floating-menu {
     display: flex;
     background-color: var(--editor-floating-bg);
-    padding: 0.2rem;
+    padding: 0.3rem 0.2rem 0.2rem 0.2rem;
     border-radius: 0.5rem;
 }
 
@@ -74,9 +74,8 @@ pre.post-code-block > code {
     opacity: 0.5;
 }
 
-.floating-menu button:hover,
-.floating-menu button.is-active {
-    opacity: 1;
+.floating-menu button:hover {
+    opacity: 0.8;
 }
 
 .ProseMirror img,
@@ -122,4 +121,20 @@ div.editor-button-icon {
 
 .editor-button-icon.editor-icon-strike {
     background-image: var(--editor-button-strike);
+}
+
+.editor-button-icon.editor-icon-heading {
+    background-image: var(--editor-button-heading);
+}
+
+.editor-button-icon.editor-icon-code {
+    background-image: var(--editor-button-code);
+}
+
+.editor-button-icon.editor-icon-image {
+    background-image: var(--editor-button-image);
+}
+
+.editor-button-icon.editor-icon-list {
+    background-image: var(--editor-button-list);
 }

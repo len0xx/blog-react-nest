@@ -32,7 +32,6 @@ import { FormEvent } from 'react'
 import { isTextSelection } from '@tiptap/core'
 import type { EditorState } from '@tiptap/pm/state'
 import type { EditorView } from '@tiptap/pm/view'
-import { default as NextImage } from 'next/image'
 
 lowlight.registerLanguage('html', html)
 lowlight.registerLanguage('css', css)
@@ -235,30 +234,26 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                 <button
                     onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
                     type="button"
-                    className={editor.isActive('heading', { level: 2 }) ? 'is-active' : ''}
                 >
-                    H1
+                    <div className="editor-button-icon editor-icon-heading" title="Heading" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleBulletList().run()}
                     type="button"
-                    className={editor.isActive('bulletList') ? 'is-active' : ''}
                 >
-                    Bullet List
+                    <div className="editor-button-icon editor-icon-list" title="Bullet List" />
                 </button>
                 <button
                     onClick={() => editor.chain().focus().toggleCodeBlock().run()}
                     type="button"
-                    className={editor.isActive('codeBlock') ? 'is-active' : ''}
                 >
-                    Code
+                        <div className="editor-button-icon editor-icon-code" title="Code Block" />
                 </button>
                 <button
                     onClick={ addImage }
                     type="button"
-                    className={editor.isActive('codeBlock') ? 'is-active' : ''}
                 >
-                   Image 
+                    <div className="editor-button-icon editor-icon-image" title="Insert Image" />
                 </button>
             </FloatingMenu>}
 
