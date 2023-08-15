@@ -249,3 +249,7 @@ input.post-title {
 input.post-title:focus {
     color: var(--editor-title-active);
 }
+
+.post-page-content .post-page-author {
+    opacity: 0.75;
+}

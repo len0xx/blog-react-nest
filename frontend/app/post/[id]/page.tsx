@@ -7,6 +7,14 @@ interface Post {
 	title: string
 	content: string
 	published: boolean
+    authorId: number
+}
+
+interface Author {
+    id: number
+    firstName: string
+    lastName: string
+    fullName: string
 }
 
 interface PageOptions {
@@ -21,17 +29,31 @@ const getData = async (id: number): Promise<Post> => {
     }
 
 	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post/${ id }`, { cache: 'no-store' })
-    let data: Post = await res.json()
 
     if (!res.ok) throw new HTTPError(res.status, 'Could not load the post')
 
-	return data!
+    let data = await res.json()
+	return data! as Post
+}
+
+const getAuthor = async (id: number): Promise<Author> => {
+	if (isNaN(+id)) {
+        throw new HTTPError(500, 'Invalid author id')
+    }
+
+    const res = await fetch(`${ API_ENDPOINT_BACK }/api/post/author/${ id }`, { cache: 'no-store' })
+
+    if (!res.ok) throw new HTTPError(res.status, 'Could not load the author')
+
+    let data = await res.json()
+	return data! as Author
 }
 
 export default async ({ params: { id } }: PageOptions) => {
-	const data = await getData(+id)
+	const post = await getData(+id)
+    const author = await getAuthor(post.id)
 
 	return (
-		<PostPage title={ data.title } content={ data.content } />	
+		<PostPage title={ post.title } content={ post.content } author={ author } />
 	)
 }

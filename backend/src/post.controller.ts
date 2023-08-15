@@ -21,12 +21,13 @@ import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkRe
 import { AuthGuard } from './auth.guard'
 import { Authorization } from './auth.utilities'
 import { Prisma, User } from '@prisma/client'
+import { UserService } from './user.service'
 
 const POSTS_AMOUNT = 20
 
 @Controller('api/post')
 export class PostController {
-    constructor(private readonly postService: PostService) {}
+    constructor(private readonly postService: PostService, private readonly userService: UserService) {}
 
     @Get()
     @Header('Content-Type', 'application/json')
@@ -78,6 +79,27 @@ export class PostController {
             console.error(e)
             throw new BadRequestException('Could not create a post')
         }
+    }
+
+    @Get('author/:id')
+    @Header('Content-Type', 'application/json')
+    @ApiTags('blog')
+    @ApiOkResponse({ description: 'Read the data about the post\'s author'})
+    @ApiNotFoundResponse({ description: 'No posts found with passed id'})
+    @ApiBadRequestResponse({ description: 'Invalid post id'})
+    async getAuthor(@Param('id', ParseIntPipe) id: number): Promise<string> {
+        if (id) {
+            const post = await this.postService.get({ id })
+            if (!post) throw new NotFoundException(`A post with specified id ${ id } was not found`)
+
+            const authorId = post.authorId
+            const author = await this.userService.get({ id: authorId })
+            if (!author) throw new NotFoundException(`A user with specified authorId ${ authorId } was not found`)
+
+            return JSON.stringify(author)
+        }
+
+        throw new BadRequestException('Invalid post id')
     }
 
     @Get(':id')
