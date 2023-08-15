@@ -1,13 +1,7 @@
 'use client'
 
 import Content from './Content'
-
-interface Author {
-    id: number
-    firstName: string
-    lastName: string
-    fullName: string
-}
+import { Author } from '@/util'
 
 interface ComponentProps {
 	title: string

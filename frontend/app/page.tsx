@@ -1,12 +1,6 @@
 import Posts from '@/components/Posts'
 import { API_ENDPOINT_BACK } from '@/config'
-
-interface Post {
-	id: number
-	title: string
-	content: string
-	published: boolean
-}
+import { Post } from '@/util'
 
 interface PostsResponse {
     posts: Post[]

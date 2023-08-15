@@ -1,21 +1,6 @@
 import PostPage from '@/components/PostPage'
 import { API_ENDPOINT_BACK } from '@/config'
-import { HTTPError } from '@/util'
-
-interface Post {
-	id: number
-	title: string
-	content: string
-	published: boolean
-    authorId: number
-}
-
-interface Author {
-    id: number
-    firstName: string
-    lastName: string
-    fullName: string
-}
+import { Post, Author, HTTPError } from '@/util'
 
 interface PageOptions {
 	params: {

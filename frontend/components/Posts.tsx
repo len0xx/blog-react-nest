@@ -4,13 +4,7 @@ import { useEffect, useState } from 'react'
 import Card from './Card'
 import { Pagination } from 'evergreen-ui'
 import { useRouter } from 'next/navigation'
-
-interface Post {
-	id: number
-	title: string
-	content: string
-	published: boolean
-}
+import { Post } from '@/util'
 
 interface Props {
     posts: Post[]

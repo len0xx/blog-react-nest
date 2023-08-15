@@ -13,6 +13,16 @@ export interface Post {
     content: string
     authorId: number
     published: boolean
+    createdAt: Date
+}
+
+export interface Author {
+    id: number
+    firstName: string    
+    lastName: string    
+    fullName: string    
+    email: string    
+    about: string    
 }
 
 export interface ValidationRule<T = any> {
