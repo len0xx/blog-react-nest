@@ -32,7 +32,7 @@ export default async function RootLayout({
                                 { authenticated ? 
                                     <>
                                         <a href="/new"><Button>New Post</Button></a>
-                                        <a href="/profile"><Button appearance='default'>Profile</Button></a>
+                                        <a href={ `/user/${ session.user.id }` }><Button appearance='default'>Profile</Button></a>
                                         <LogOut />
                                     </>
                                     :

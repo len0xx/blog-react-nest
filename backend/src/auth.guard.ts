@@ -1,14 +1,15 @@
 import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common'
 import { IncomingMessage } from 'http'
-import UserDto, { UserRole, UserRoleEnum } from './user.dto'
+import { UserRole, UserRoleEnum } from './user.dto'
 import { decodeToken } from './auth.utilities'
+import { ExtendedUser } from './user.service'
 
 @Injectable()
 export class AuthGuard implements CanActivate {
     private privilegedRoles = [ UserRoleEnum.ADMIN ] as UserRole[]
     private defaultException = new ForbiddenException('You don\'t have access to this resource')
 
-    private validateUserRole(user: UserDto): boolean {
+    private validateUserRole(user: ExtendedUser): boolean {
         return this.privilegedRoles.includes(user.role)
     }
 

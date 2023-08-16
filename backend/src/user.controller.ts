@@ -1,5 +1,5 @@
-import { BadRequestException, Body, Controller, Get, Header, HttpCode, HttpStatus, Patch, Post, UnauthorizedException } from "@nestjs/common"
-import { UserService } from "./user.service"
+import { BadRequestException, Body, Controller, Get, Header, HttpCode, HttpStatus, Param, ParseIntPipe, Patch, Post, UnauthorizedException } from "@nestjs/common"
+import { ExtendedUser, UserService } from "./user.service"
 import { compare, hash } from 'bcrypt'
 import * as jwt from 'jsonwebtoken'
 import { Authorization } from "./auth.utilities"
@@ -120,10 +120,10 @@ export class UserController {
     @Get()
     @Header('Content-Type', 'application/json')
     @ApiTags('user')
-    @ApiOkResponse({ description: 'User\'s data'})
+    @ApiOkResponse({ description: 'Get authorized user\'s data'})
     @ApiBadRequestResponse({ description: 'Could not fetch data for authorized user'})
     @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
-    async get(@Authorization() user: User): Promise<string> {
+    async getAuthorized(@Authorization() user: ExtendedUser): Promise<string> {
         if (!user) {
             throw new UnauthorizedException('You must authorize first to access this resource')
         }
@@ -131,9 +131,23 @@ export class UserController {
         const id = user.id
         
         try {
-            const data = await this.userService.get({ id })
-            delete data.password
-            delete data.role
+            const data = await this.userService.get({ id }, true)
+            return JSON.stringify(data)
+        }
+        catch (e) {
+            console.error(e)
+            throw new BadRequestException('Could not get user data')
+        }
+    }
+
+    @Get(':id')
+    @Header('Content-Type', 'application/json')
+    @ApiTags('user')
+    @ApiOkResponse({ description: 'Get user data by id'})
+    @ApiBadRequestResponse({ description: 'Could not fetch data for specified user'})
+    async getById(@Param('id', ParseIntPipe) id: number): Promise<string> {
+        try {
+            const data = await this.userService.get({ id }, true)
             return JSON.stringify(data)
         }
         catch (e) {

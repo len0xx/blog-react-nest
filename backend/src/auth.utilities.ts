@@ -1,6 +1,5 @@
 import * as jwt from 'jsonwebtoken'
-import { User } from "@prisma/client"
-import { ExtendedUser, UserService } from './user.service'
+import { ExtendedUser, FullUser, UserService } from './user.service'
 import { PrismaService } from './prisma.service'
 import { ExecutionContext, createParamDecorator } from '@nestjs/common'
 import UserDto from './user.dto'
@@ -8,13 +7,13 @@ import { IncomingMessage } from 'http'
 
 const AUTH_SECRET = process.env.AUTH_SECRET
 
-export async function decodeToken(token: string): Promise<ExtendedUser | null> {
+export async function decodeToken(token: string): Promise<FullUser | null> {
     const prismaService = new PrismaService()
     const userService = new UserService(prismaService)
 
     try {
         const payload = jwt.verify(token, AUTH_SECRET!) as UserDto
-        const user = await userService.get({ id: payload.id })
+        const user = await userService.get({ id: payload.id }) as FullUser
         return user || null
     }
     catch (e) {
@@ -26,7 +25,7 @@ export const Authorization = createParamDecorator(
     async (
         _data: unknown,
         ctx: ExecutionContext
-    ): Promise<User | null> => {
+    ): Promise<ExtendedUser | null> => {
         const request = ctx.switchToHttp().getRequest() as IncomingMessage
         const { authorization: accessToken } = request.headers
 

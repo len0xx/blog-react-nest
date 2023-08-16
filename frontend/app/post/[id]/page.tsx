@@ -9,7 +9,7 @@ interface PageOptions {
 }
 
 const getData = async (id: number): Promise<Post> => {
-	if (isNaN(+id)) {
+	if (isNaN(id)) {
         throw new HTTPError(400, 'Invalid post id')
     }
 
@@ -22,11 +22,7 @@ const getData = async (id: number): Promise<Post> => {
 }
 
 const getAuthor = async (id: number): Promise<Author> => {
-	if (isNaN(+id)) {
-        throw new HTTPError(500, 'Invalid author id')
-    }
-
-    const res = await fetch(`${ API_ENDPOINT_BACK }/api/post/author/${ id }`, { cache: 'no-store' })
+    const res = await fetch(`${ API_ENDPOINT_BACK }/api/user/${ id }`, { cache: 'no-store' })
 
     if (!res.ok) throw new HTTPError(res.status, 'Could not load the author')
 
@@ -36,7 +32,7 @@ const getAuthor = async (id: number): Promise<Author> => {
 
 export default async ({ params: { id } }: PageOptions) => {
 	const post = await getData(+id)
-    const author = await getAuthor(post.id)
+    const author = await getAuthor(post.authorId)
 
 	return (
 		<PostPage title={ post.title } content={ post.content } author={ author } />

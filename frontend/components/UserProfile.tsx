@@ -1,50 +1,43 @@
 "use client"
 
-import { User } from "next-auth"
-import { useSession } from "next-auth/react"
-import { ChangeEvent, FormEvent, useEffect, useState } from "react"
 import styles from '@/app/styles/profile.module.css'
-import { TextareaField, TextInput, Button, Label, InlineAlert } from "evergreen-ui"
-import { API_ENDPOINT } from "@/config"
-import { Post } from "@/util"
+import { Post, User, callAPI } from "@/util"
 import Posts from "./Posts"
+import { ChangeEvent, FormEvent, useState } from 'react'
+import { Button, InlineAlert, Label, TextInput, TextareaField } from 'evergreen-ui'
+import { API_ENDPOINT } from '@/config'
+
+interface Props {
+    posts: Post[]
+    pages: number
+    count: number
+    token?: string
+    editable?: boolean
+    user: User
+}
 
 enum AllowedModes {
     Viewing,
     Editing
 }
 
-type LocalUser = Omit<User, 'backendToken'>
-
-export default ({ page }: { page: number }) => {
-    const { data: session } = useSession()
-    const [ user, setUser ] = useState<LocalUser | null>(null)
-    const [ posts, setPosts ] = useState<Post[]>([])
-    const [ pages, setPages ] = useState<number>(1)
-    const [ count, setCount ] = useState<number>(0)
+export default ({ user, posts, pages, count, editable = false, token }: Props) => {
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
+    const [ localUser, setUser ] = useState<User>(user)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ success, setSuccess ] = useState(false)
     const [ error, setError ] = useState(false)
     const [ errorText, setErrorText ] = useState('')
-    const [ firstName, setFirstName ] = useState('')
-    const [ lastName, setLastName ] = useState('')
-    const [ about, setAbout ] = useState('')
+    const [ firstName, setFirstName ] = useState(user.firstName)
+    const [ lastName, setLastName ] = useState(user.lastName)
+    const [ about, setAbout ] = useState(user.about)
 
-    const switchMode = () => {
-        if (mode === AllowedModes.Viewing) {
-            setMode(AllowedModes.Editing)
-        }
-        else {
-            setMode(AllowedModes.Viewing)
-        }
-    }
+    const switchMode = () => setMode(mode === AllowedModes.Viewing ? AllowedModes.Editing : AllowedModes.Viewing)
 
     const fetchUser = async () => {
-        const token = session!.user.backendToken
         const getOptions = {
             method: 'GET',
-            headers: { 'Content-Type': 'application/json', 'Authorization': token }
+            headers: { 'Content-Type': 'application/json', 'Authorization': token! }
         }
 
         const res = await fetch(`${ API_ENDPOINT }/api/user`, getOptions)
@@ -57,86 +50,37 @@ export default ({ page }: { page: number }) => {
         e.preventDefault()
         setIsLoading(true)
 
-        const data = { firstName, lastName, about }
+        const payload = { firstName, lastName, about }
 
-        const options: RequestInit = {
-            method: 'PATCH',
-            headers: { 'Content-Type': 'application/json', 'Authorization': session!.user.backendToken! },
-            body: JSON.stringify(data)
-        }
-
-        const res = await fetch(`${ API_ENDPOINT }/api/user/update`, options)
-        const response = await res.json()
-
-        setIsLoading(false)
-        if (res.ok && response.updated) {
+        try {
+            await callAPI('/api/user/update', { method: 'PATCH', payload, token })
+            setIsLoading(false)
             setError(false)
             setSuccess(true)
             await fetchUser()
         }
-        else {
+        catch (e) {
+            setIsLoading(false)
             setSuccess(false)
             setError(true)
-            setErrorText(response.message || 'An error occurred. Please try again later')
+            setErrorText((e as Error).message || 'An error occurred. Please try again later')
         }
-
     }
 
-    useEffect(() => {
-        if (session && session.user) {
-            const token = session.user.backendToken
-            const getOptions = {
-                method: 'GET',
-                headers: { 'Content-Type': 'application/json', 'Authorization': token }
-            }
-
-            fetch(`${ API_ENDPOINT }/api/user`, getOptions).then((res) => {
-                let localUser: LocalUser | null = null
-                if (res.ok) {
-                    res.json().then((response) => {
-                        if (response) {
-                            localUser = response
-                            setUser(response)
-                        }
-                        else {
-                            localUser = session.user
-                            setUser(session.user)
-                        }
-                        setFirstName(localUser!.firstName!)
-                        setLastName(localUser!.lastName!)
-                        setAbout(localUser!.about!)
-
-                        fetch(`${ API_ENDPOINT }/api/post?author=${ localUser!.id }&page=${ page }`, getOptions).then((res) => {
-                            res.json().then((response) => {
-                                if (res.ok && response && response.posts) {
-                                    setPosts(response.posts)
-                                    setPages(response.pages)
-                                    setCount(response.count)
-                                }
-                                else {
-                                    setPosts([])
-                                }
-                            })
-                        })
-                    })
-                }
-            })
-        }
-    }, [ session, page ])
 
     return (
         <>
             { user &&
                 <>
-                    <h1 className={ styles.profileHeader }>{ mode === AllowedModes.Viewing ? user.fullName : 'Edit your profile' }</h1>
+                    <h1 className={ styles.profileHeader }>{ mode === AllowedModes.Viewing ? localUser.fullName : 'Edit your profile' }</h1>
                     { mode === AllowedModes.Viewing ?
                         <>
-                            { user.about && <p className={ styles.profileParagraph }>{ user.about }</p> }
-                            <p className={ styles.profileParagraph }>ID: { user.id }</p>
-                            <p className={ styles.profileParagraph }>Email: { user.email }</p>
-                            <div className={ styles.buttons }>
+                            { localUser.about && <p className={ styles.profileParagraph }>{ localUser.about }</p> }
+                            <p className={ styles.profileParagraph }>ID: { localUser.id }</p>
+                            <p className={ styles.profileParagraph }>Email: { localUser.email }</p>
+                            { editable && <div className={ styles.buttons }>
                                 <Button appearance="default" onClick={ switchMode }>Edit</Button>
-                            </div>
+                            </div> }
                         </>
                         :
                         <form onSubmit={ updateProfile }>
@@ -194,8 +138,8 @@ export default ({ page }: { page: number }) => {
                             <Posts
                                 posts={ posts }
                                 pages={ pages }
-                                editable={ true }
-                                token={ session ? session.user.backendToken : '' }
+                                editable={ editable }
+                                token={ token }
                             />
                         </>
                     }

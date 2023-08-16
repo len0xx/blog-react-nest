@@ -1,3 +1,6 @@
+import { HTTP_METHOD } from "next/dist/server/web/http"
+import { API_ENDPOINT } from "./config"
+
 export class HTTPError extends Error {
     code: number
 
@@ -16,13 +19,51 @@ export interface Post {
     createdAt: Date
 }
 
-export interface Author {
+export interface User {
     id: number
     firstName: string    
     lastName: string    
     fullName: string    
     email: string    
     about: string    
+}
+
+export type Author = User
+
+export interface APIOptions {
+    method: HTTP_METHOD
+    token?: string
+    payload?: Record<string, unknown>
+    headers?: Headers | [string, string][]
+}
+
+export const extractHeader = (headers: Headers | [string, string][] | undefined, name: string): string | null => {
+    if (!headers) return null
+
+    if (headers instanceof Headers) {
+        return headers.get(name)
+    }
+
+    const filtered = headers.filter((header) => header[0] === name)
+    return filtered.length ? filtered[0][1] : null
+}
+
+export const callAPI = async <T = any>(path: string, { method, token, payload, headers }: APIOptions): Promise<T> => {
+    let contentType = 'application/json'
+    if (extractHeader(headers, 'Content-Type')) contentType = extractHeader(headers, 'Content-Type')!
+
+    const finalHeaders: Record<string, string> = { 'Content-Type': contentType }
+    if (token) finalHeaders['Authorization'] = token
+
+    const options: RequestInit = {
+        method,
+        headers: finalHeaders,
+        body: (contentType === 'application/json' ? JSON.stringify(payload) : payload) as BodyInit
+    }
+
+    const res = await fetch(`${ API_ENDPOINT }${ path }`, options)
+    if (!res.ok) throw new HTTPError(res.status, res.statusText)
+    return await res.json()
 }
 
 export interface ValidationRule<T = any> {
