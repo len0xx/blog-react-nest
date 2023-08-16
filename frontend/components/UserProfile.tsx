@@ -31,6 +31,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
     const [ firstName, setFirstName ] = useState(user.firstName)
     const [ lastName, setLastName ] = useState(user.lastName)
     const [ about, setAbout ] = useState(user.about)
+    const [ localCount, setCount ] = useState(count)
 
     const switchMode = () => setMode(mode === AllowedModes.Viewing ? AllowedModes.Editing : AllowedModes.Viewing)
 
@@ -67,6 +68,11 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
         }
     }
 
+    const postsUpdated = (newPosts: Post[]) => {
+        if (newPosts.length < posts.length) {
+            setCount(localCount - 1)
+        }
+    }
 
     return (
         <>
@@ -133,13 +139,14 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                     { posts.length &&
                         <>
                             <h3 className={ styles.profileHeader }>
-                                { user.fullName }'s posts ({ count })
+                                { user.fullName }'s posts ({ localCount })
                             </h3>
                             <Posts
                                 posts={ posts }
                                 pages={ pages }
                                 editable={ editable }
                                 token={ token }
+                                onUpdate={ postsUpdated }
                             />
                         </>
                     }

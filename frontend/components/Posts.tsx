@@ -11,9 +11,10 @@ interface Props {
     pages: number
     editable?: boolean
     token?: string
+    onUpdate?: (posts: Post[]) => void
 }
 
-export default ({ posts, pages, editable = false, token = undefined }: Props) => {
+export default ({ posts, pages, token, onUpdate, editable = false }: Props) => {
     const [ page, setPage ] = useState(1)
     const [ localPosts, setPosts ] = useState<Post[]>([])
     const router = useRouter()
@@ -21,6 +22,7 @@ export default ({ posts, pages, editable = false, token = undefined }: Props) =>
     const postDeleted = (id: number) => {
         const newPosts = localPosts.filter((post) => post.id !== id)
         setPosts(newPosts)
+        if (onUpdate) onUpdate(newPosts)
     }
 
     const updatePage = (number: number) => {
