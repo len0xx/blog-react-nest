@@ -13,7 +13,7 @@ import Text from '@tiptap/extension-text'
 import Heading from '@tiptap/extension-heading'
 import BulletList from '@tiptap/extension-bullet-list'
 import BulletItem from '@tiptap/extension-list-item'
-import { Ref, forwardRef, useImperativeHandle, useRef, useState } from 'react'
+import { Ref, forwardRef, useEffect, useImperativeHandle, useRef, useState } from 'react'
 import css from 'highlight.js/lib/languages/css'
 import js from 'highlight.js/lib/languages/javascript'
 import ts from 'highlight.js/lib/languages/typescript'
@@ -39,7 +39,8 @@ lowlight.registerLanguage('js', js)
 lowlight.registerLanguage('ts', ts)
 
 interface Editor {
-    getJSON: () => void
+    getJSON: () => any
+    getText: () => string
 }
 
 interface ImagesResponse {
@@ -50,7 +51,15 @@ interface ErrorResponse {
     message?: string
 }
 
-const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
+export interface UpdateDetails {
+    editor: Editor
+}
+
+interface Props {
+    onUpdate?: (details: UpdateDetails) => void
+}
+
+const TipTap = forwardRef<Editor, Props>(({ onUpdate }: Props, ref: Ref<Editor>) => {
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [ error, setError ] = useState<boolean>(false)
     const [ errorText, setErrorText ] = useState<string | null>(null)
@@ -109,6 +118,10 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
                 })
         ],
         content: '<p>Start typing here</p>'
+    })
+
+    useEffect(() => {
+        if (editor && onUpdate) editor.on('update', onUpdate)
     })
 
     const openDialog = () => {
@@ -170,7 +183,8 @@ const TipTap = forwardRef<Editor, {}>((_props, ref: Ref<Editor>) => {
     }
 
     const publicRef = {
-        getJSON: () => editor!.getJSON()
+        getJSON: () => editor!.getJSON(),
+        getText: () => editor!.getText()
     }
 
     useImperativeHandle(ref, () => publicRef)

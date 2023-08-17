@@ -7,7 +7,8 @@ import { callAPI } from '@/util'
 import { HTTP_METHOD } from 'next/dist/server/web/http'
 
 interface Editor {
-    getJSON: () => string 
+    getJSON: () => any
+    getText: () => string
 }
 
 interface Props {
@@ -19,9 +20,17 @@ export default function NewForm({ token }: Props) {
     const [ errorText, setErrorText ] = useState('')
     const [ error, setError ] = useState(false)
     const [ isLoading, setIsLoading ] = useState(false)
+    const [ disabled, setDisabled ] = useState(true)
+    const [ mounted, setMounted ] = useState(false)
     const editor = useRef<Editor | null>(null)
     const formRef = useRef<HTMLFormElement>(null)
     const titleInput = useRef<HTMLInputElement>(null)
+
+    const inputUpdated = () => {
+        const title = titleInput.current!.value
+        const content = editor.current!.getText()
+        setDisabled(!content.length || !title.length)
+    }
 
     const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
@@ -65,13 +74,18 @@ export default function NewForm({ token }: Props) {
         }
     }
 
-    useEffect(() => titleInput.current!.focus())
+    useEffect(() => {
+        if (!mounted) {
+            titleInput.current!.focus()
+            setMounted(true)
+        }
+    })
 
     return (
         <>
             <form onSubmit={ submit } ref={ formRef }>
-                <input className='post-title' name="title" placeholder='Create a new post' ref={ titleInput } />
-                <TipTap ref={ editor } />
+                <input className='post-title' name="title" placeholder='Create a new post' ref={ titleInput } onChange={ inputUpdated } />
+                <TipTap onUpdate={ inputUpdated } ref={ editor } />
                 { success &&
                     <InlineAlert intent="success" marginTop={16}>
                         A post has been successfully created
@@ -83,7 +97,14 @@ export default function NewForm({ token }: Props) {
                     </InlineAlert>
                 }
                 <br />
-                <Button appearance='primary' isLoading={ isLoading } type="submit">Publish</Button>
+                <Button
+                    type="submit"
+                    appearance='primary'
+                    isLoading={ isLoading }
+                    disabled={ disabled }
+                >
+                    Publish
+                </Button>
             </form>
         </>
     )
