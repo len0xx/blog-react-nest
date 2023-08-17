@@ -38,7 +38,7 @@ export class PostController {
         const where: Prisma.PostWhereInput = !isNaN(+author) ? { authorId: +author } : {}
         const posts = await this.postService.getAll({ where, orderBy: [ { id: 'desc' } ], skip: offset, take: POSTS_AMOUNT })
         const amount = await this.postService.count({ where })
-        const pages = Math.floor(amount / POSTS_AMOUNT) + 1
+        const pages = Math.ceil(amount / POSTS_AMOUNT)
         return JSON.stringify({ posts, pages, count: amount })
     }
 
