@@ -136,7 +136,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                     }
                     <br />
                     <br />
-                    { posts.length &&
+                    { posts.length ?
                         <>
                             <h3 className={ styles.profileHeader }>
                                 { user.fullName }'s posts ({ localCount })
@@ -149,6 +149,8 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 onUpdate={ postsUpdated }
                             />
                         </>
+                        :
+                        <></>
                     }
                 </>
             }
