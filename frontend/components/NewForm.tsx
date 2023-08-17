@@ -1,7 +1,7 @@
 'use client'
 
 import { FormEvent, useEffect, useRef, useState } from 'react'
-import { Button, InlineAlert } from 'evergreen-ui'
+import { Button, InlineAlert, toaster } from 'evergreen-ui'
 import TipTap from './TipTap'
 import { callAPI } from '@/util'
 import { HTTP_METHOD } from 'next/dist/server/web/http'
@@ -74,6 +74,12 @@ export default function NewForm({ token }: Props) {
         }
     }
 
+    const trySubmit = () => {
+        if (disabled) {
+            toaster.danger('You can not publish this post', { description: 'Because either "Title" or "Content" field is empty' })
+        }
+    }
+
     useEffect(() => {
         if (!mounted) {
             titleInput.current!.focus()
@@ -97,14 +103,16 @@ export default function NewForm({ token }: Props) {
                     </InlineAlert>
                 }
                 <br />
-                <Button
-                    type="submit"
-                    appearance='primary'
-                    isLoading={ isLoading }
-                    disabled={ disabled }
-                >
-                    Publish
-                </Button>
+                <span onClick={ trySubmit }>
+                    <Button
+                        type="submit"
+                        appearance='primary'
+                        isLoading={ isLoading }
+                        disabled={ disabled }
+                    >
+                        Publish
+                    </Button>
+                </span>
             </form>
         </>
     )
