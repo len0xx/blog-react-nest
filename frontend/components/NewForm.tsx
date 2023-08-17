@@ -2,15 +2,19 @@
 
 import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Button, InlineAlert } from 'evergreen-ui'
-import { API_ENDPOINT } from '@/config'
 import TipTap from './TipTap'
-import { Session } from 'next-auth'
+import { callAPI } from '@/util'
+import { HTTP_METHOD } from 'next/dist/server/web/http'
 
 interface Editor {
     getJSON: () => string 
 }
 
-export default function NewForm({ session }: { session: Session }) {
+interface Props {
+    token?: string
+}
+
+export default function NewForm({ token }: Props) {
     const [ success, setSuccess ] = useState(false)
     const [ errorText, setErrorText ] = useState('')
     const [ error, setError ] = useState(false)
@@ -22,6 +26,7 @@ export default function NewForm({ session }: { session: Session }) {
     const submit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
+
         const content = editor.current!.getJSON()
         const post = {
             title: titleInput.current!.value.toString(),
@@ -37,26 +42,26 @@ export default function NewForm({ session }: { session: Session }) {
             return
         }
 
-        const res = await fetch(`${API_ENDPOINT}/api/post`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': session.user.backendToken
-            },
-            body: JSON.stringify(post)
-        })
-
-        setIsLoading(false)
-        if (res.ok && res.status >= 200 && res.status < 300) {
+        try {
+            const options = {
+                method: 'POST' as HTTP_METHOD,
+                payload: post,
+                token
+            }
+            await callAPI('/api/post', options)
             setSuccess(true)
             setError(false)
             setTimeout(() => window.location.href = '/', 1000)
         }
-        else {
-            const error = res.status < 500 ? (await res.json()).message : 'An error occurred while creating the post, please try again later'
+        catch (e) {
+            const error = (e as Error).message
+            console.error(error)
+            setErrorText(error)
             setSuccess(false)
             setError(true)
-            setErrorText(error)
+        }
+        finally {
+            setIsLoading(false)
         }
     }
 

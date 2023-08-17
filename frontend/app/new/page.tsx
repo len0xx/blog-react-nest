@@ -5,5 +5,5 @@ import { getServerSession } from 'next-auth'
 export default async () => {
     const session = await getServerSession(authOptions)
 
-	return <NewForm session={ session! } />
+	return <NewForm token={ session ? session.user.backendToken : undefined } />
 }

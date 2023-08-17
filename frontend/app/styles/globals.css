@@ -276,4 +276,7 @@ input.post-title:focus {
     opacity: 0.75;
 }
 
-
+div[data-evergreen-toaster-container] {
+    position: relative;
+    z-index: 140;
+}

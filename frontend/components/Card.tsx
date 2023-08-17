@@ -3,8 +3,9 @@
 import { Button, Dialog } from 'evergreen-ui'
 import Content from './Content'
 import '@/app/styles/card.css'
-import { API_ENDPOINT } from '@/config'
 import { useState } from 'react'
+import { callAPI } from '@/util'
+import { toaster } from 'evergreen-ui'
 
 interface CardProps {
     title: string
@@ -16,21 +17,27 @@ interface CardProps {
     onDelete?: (id: number) => void
 }
 
-export default function CardComponent({ title, text, id, editable = false, token = undefined, onDelete = undefined }: CardProps) {
+export default function CardComponent({ title, text, id, editable = false, token, onDelete }: CardProps) {
     const [ isLoading, setIsLoading ] = useState(false)
     const [ isDialogShown, setShown ] = useState(false)
 
     const deletePost = async () => {
-        setIsLoading(true)
-        const options = {
-            method: 'DELETE',
-            headers: { 'Content-Type': 'application/json', 'Authorization': token! }
-        }
-        const res = await fetch(`${ API_ENDPOINT }/api/post/${ id }`, options)
-        setIsLoading(false)
+        let response: any = null
 
-        if (res.ok && onDelete) {
-            onDelete(id)
+        try {
+            setIsLoading(true)
+            response = await callAPI(`/api/post/${ id }`, { method: 'DELETE', token })
+        }
+        catch (e) {
+            console.error(`The post with id ${ id } was not deleted`)
+            toaster.danger('The post was not deleted due to an unexpected error', { description: 'Please try again later' })
+        }
+        finally {
+            setIsLoading(false)
+            if (response) {
+                if (onDelete) onDelete(id)
+                toaster.success('The post has successfully been deleted')
+            }
         }
     }
 

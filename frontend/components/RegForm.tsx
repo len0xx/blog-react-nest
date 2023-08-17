@@ -1,8 +1,8 @@
 'use client'
 
-import { API_ENDPOINT } from '@/config'
-import { ValidationError, ValidationSchema, validateSchema } from '@/util'
+import { ValidationError, ValidationSchema, callAPI, validateSchema } from '@/util'
 import { Button, InlineAlert, TextInput } from 'evergreen-ui'
+import { HTTP_METHOD } from 'next/dist/server/web/http'
 import { FormEvent, useRef, useState } from 'react'
 
 const emailRegex = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
@@ -81,21 +81,19 @@ export default function RegForm() {
             return e instanceof ValidationError ? errorState(e.message) : console.error(e)
         }
 
-        const options: RequestInit = {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(data)
-        }
-
-        const res = await fetch(`${ API_ENDPOINT }/api/user/create`, options)
-        const response = await res.json()
-
-        if (res.ok && response.created) {
+        try {
+            const options = {
+                method: 'POST' as HTTP_METHOD,
+                payload: data
+            }
+            await callAPI('/api/user/create', options)
             successState()
             setTimeout(() => window.location.href = '/login', 1000)
         }
-        else {
-            errorState(response.message || 'An error occurred. Please try again later')
+        catch (e) {
+            const error = (e as Error).message
+            console.error(error)
+            errorState(error)
         }
     }
 

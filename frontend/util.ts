@@ -62,7 +62,18 @@ export const callAPI = async <T = any>(path: string, { method, token, payload, h
     }
 
     const res = await fetch(`${ API_ENDPOINT }${ path }`, options)
-    if (!res.ok) throw new HTTPError(res.status, res.statusText)
+    if (!res.ok) {
+        let errorText = res.statusText
+
+        try {
+            const response = await res.json()
+            if (response.error) errorText = response.error
+            else if (response.message) errorText = response.message
+        }
+        finally {
+            throw new HTTPError(res.status, res.statusText)
+        }
+    }
     return await res.json()
 }
 
