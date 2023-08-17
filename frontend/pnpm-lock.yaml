@@ -1,4 +1,4 @@
-lockfileVersion: '6.1'
+lockfileVersion: '6.0'
 
 settings:
   autoInstallPeers: true
@@ -8,6 +8,9 @@ dependencies:
   '@tiptap/core':
     specifier: ^2.0.3
     version: 2.0.3(@tiptap/pm@2.0.3)
+  '@tiptap/extension-blockquote':
+    specifier: ^2.1.2
+    version: 2.1.2(@tiptap/core@2.0.3)
   '@tiptap/extension-bold':
     specifier: ^2.0.3
     version: 2.0.3(@tiptap/core@2.0.3)
@@ -1067,8 +1070,8 @@ packages:
       '@tiptap/pm': 2.0.3(@tiptap/core@2.0.3)
     dev: false
 
-  /@tiptap/extension-blockquote@2.0.3(@tiptap/core@2.0.3):
-    resolution: {integrity: sha512-rkUcFv2iL6f86DBBHoa4XdKNG2StvkJ7tfY9GoMpT46k3nxOaMTqak9/qZOo79TWxMLYtXzoxtKIkmWsbbcj4A==}
+  /@tiptap/extension-blockquote@2.1.2(@tiptap/core@2.0.3):
+    resolution: {integrity: sha512-DAruFaDrc8AwPLujhDLyay44vg7Vo4K81QCs05Ea2XV0YLtqpqcerHhcI5RjyRan7rp8sYI/u/F/QyvMNvh9sA==}
     peerDependencies:
       '@tiptap/core': ^2.0.0
     dependencies:
@@ -1341,7 +1344,7 @@ packages:
     resolution: {integrity: sha512-t4WG4w93zTpL2VxhVyJJvl3kdLF001ZrhpOuEiZqEMBMUMbM56Uiigv1CnUQpTFrjDAh3IM8hkqzAh20TYw2iQ==}
     dependencies:
       '@tiptap/core': 2.0.3(@tiptap/pm@2.0.3)
-      '@tiptap/extension-blockquote': 2.0.3(@tiptap/core@2.0.3)
+      '@tiptap/extension-blockquote': 2.1.2(@tiptap/core@2.0.3)
       '@tiptap/extension-bold': 2.0.3(@tiptap/core@2.0.3)
       '@tiptap/extension-bullet-list': 2.0.3(@tiptap/core@2.0.3)
       '@tiptap/extension-code': 2.0.3(@tiptap/core@2.0.3)

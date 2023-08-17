@@ -14,6 +14,7 @@ import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Underline from '@tiptap/extension-underline'
+import Blockquote from '@tiptap/extension-blockquote'
 import 'highlight.js/styles/github-dark.css'
 import hljs from 'highlight.js'
 import '@/app/styles/tiptap.css'
@@ -44,6 +45,7 @@ export default function Content({ content }: ComponentProps) {
                 Link,
                 Underline,
                 Strike,
+                Blockquote,
                 CodeBlockLowlight.configure({
                     HTMLAttributes: {
                         class: 'post-code-block'

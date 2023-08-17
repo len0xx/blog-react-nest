@@ -47,6 +47,7 @@
     --card-border-rgb: 131, 134, 135;
 
     --label-color: #0A1433;
+    --blockquote-border: rgba(13, 13, 13, .1);
 
     --header-background: rgb(204, 208, 208);
     --header-title-color: #000;
@@ -71,6 +72,7 @@
     --editor-button-code: url("/img/code.svg");
     --editor-button-list: url("/img/list.svg");
     --editor-button-heading: url("/img/heading.svg");
+    --editor-button-quote: url("/img/quote.svg");
 }
 
 @media (prefers-color-scheme: dark) {
@@ -105,6 +107,7 @@
         --card-border-rgb: 200, 200, 200;
 
         --label-color: #EBF0FF;
+        --blockquote-border: rgba(255, 255, 255, .1);
 
         --header-background: #000;
         --header-title-color: #FFF;
@@ -128,6 +131,7 @@
         --editor-button-code: url("/img/code-white.svg");
         --editor-button-list: url("/img/list-white.svg");
         --editor-button-heading: url("/img/heading-white.svg");
+        --editor-button-quote: url("/img/quote-white.svg");
     }
 
     nav[role="navigation"].ub-box-szg_border-box > ul > li > button:not([disabled]) {
@@ -279,4 +283,9 @@ input.post-title:focus {
 div[data-evergreen-toaster-container] {
     position: relative;
     z-index: 140;
+}
+
+blockquote {
+    border-left: 3px solid var(--blockquote-border);
+    padding-left: 1rem;
 }

@@ -138,3 +138,7 @@ div.editor-button-icon {
 .editor-button-icon.editor-icon-list {
     background-image: var(--editor-button-list);
 }
+
+.editor-button-icon.editor-icon-quote {
+    background-image: var(--editor-button-quote);
+}

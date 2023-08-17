@@ -24,6 +24,7 @@ import Strike from '@tiptap/extension-strike'
 import Link from '@tiptap/extension-link'
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight'
 import CodeBlockComponent from './CodeBlock'
+import Blockquote from '@tiptap/extension-blockquote'
 import { lowlight } from 'lowlight'
 import { API_ENDPOINT } from '@/config'
 import '@/app/styles/tiptap.css'
@@ -101,6 +102,7 @@ const TipTap = forwardRef<Editor, Props>(({ onUpdate }: Props, ref: Ref<Editor>)
             BulletItem,
             Underline,
             Strike,
+            Blockquote,
             Link.configure({
                 openOnClick: false,
             }),
@@ -268,6 +270,12 @@ const TipTap = forwardRef<Editor, Props>(({ onUpdate }: Props, ref: Ref<Editor>)
                     type="button"
                 >
                     <div className="editor-button-icon editor-icon-image" title="Insert Image" />
+                </button>
+                <button
+                    onClick={ () => editor.chain().focus().toggleBlockquote().run() }
+                    type="button"
+                >
+                    <div className="editor-button-icon editor-icon-quote" title="Insert Blockquote" />
                 </button>
             </FloatingMenu>}
 
