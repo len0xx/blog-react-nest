@@ -48,6 +48,7 @@ pre.post-code-block > code {
     opacity: 0.4;
 }
 
+.bubble-menu button:focus-visible:not(.is-active),
 .bubble-menu button:hover:not(.is-active) {
     opacity: 0.65;
 }
@@ -74,6 +75,7 @@ pre.post-code-block > code {
     opacity: 0.5;
 }
 
+.floating-menu button:focus-visible,
 .floating-menu button:hover {
     opacity: 0.8;
 }
