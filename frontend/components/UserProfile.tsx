@@ -55,16 +55,17 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
 
         try {
             await callAPI('/api/user/update', { method: 'PATCH', payload, token })
-            setIsLoading(false)
             setError(false)
             setSuccess(true)
             await fetchUser()
         }
         catch (e) {
-            setIsLoading(false)
             setSuccess(false)
             setError(true)
             setErrorText((e as Error).message || 'An error occurred. Please try again later')
+        }
+        finally {
+            setIsLoading(false)
         }
     }
 
@@ -145,6 +146,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 posts={ posts }
                                 pages={ pages }
                                 editable={ editable }
+                                favouritable={ editable }
                                 token={ token }
                                 onUpdate={ postsUpdated }
                             />

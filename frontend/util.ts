@@ -17,6 +17,7 @@ export interface Post {
     authorId: number
     published: boolean
     createdAt: Date
+    saved?: boolean
 }
 
 export interface User {
@@ -30,10 +31,10 @@ export interface User {
 
 export type Author = User
 
-export interface APIOptions {
+export interface APIOptions<T> {
     method: HTTP_METHOD
     token?: string
-    payload?: Record<string, unknown>
+    payload?: T
     headers?: Headers | [string, string][]
 }
 
@@ -48,7 +49,7 @@ export const extractHeader = (headers: Headers | [string, string][] | undefined,
     return filtered.length ? filtered[0][1] : null
 }
 
-export const callAPI = async <T = any>(path: string, { method, token, payload, headers }: APIOptions): Promise<T> => {
+export const callAPI = async <APIResponse = any, Payload = any>(path: string, { method, token, payload, headers }: APIOptions<Payload>): Promise<APIResponse> => {
     let contentType = 'application/json'
     if (extractHeader(headers, 'Content-Type')) contentType = extractHeader(headers, 'Content-Type')!
 

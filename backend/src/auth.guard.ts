@@ -1,4 +1,4 @@
-import { Injectable, CanActivate, ExecutionContext, ForbiddenException } from '@nestjs/common'
+import { Injectable, CanActivate, ExecutionContext, ForbiddenException, UnauthorizedException } from '@nestjs/common'
 import { IncomingMessage } from 'http'
 import { UserRole, UserRoleEnum } from './user.dto'
 import { decodeToken } from './auth.utilities'
@@ -20,7 +20,7 @@ export class AuthGuard implements CanActivate {
 
         const token = request.headers.authorization
         if (!token) {
-            throw this.defaultException
+            throw new UnauthorizedException('You must authorize first')
         }
 
         const user = await decodeToken(token)

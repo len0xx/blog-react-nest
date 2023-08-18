@@ -8,24 +8,35 @@ datasource db {
 }
 
 model Post {
-    id            Int         @id @default(autoincrement())
-    title         String      @db.VarChar(255)
-    createdAt     DateTime    @default(now()) @db.Timestamp(6)
-    content       String
-    published     Boolean     @default(false)
-    author        User        @relation(fields: [authorId], references: [id])
-    authorId      Int
+    id              Int             @id @default(autoincrement())
+    title           String          @db.VarChar(255)
+    createdAt       DateTime        @default(now()) @db.Timestamp(6)
+    content         String
+    published       Boolean         @default(false)
+    author          User            @relation(fields: [authorId], references: [id])
+    authorId        Int
+    favourites      Favourites[]
 }
 
 model User {
-    id          Int         @id @default(autoincrement())
-    email       String      @db.VarChar(255) @unique()
-    firstName   String      @db.VarChar(255)
-    lastName    String      @db.VarChar(255)
-    password    String      @db.VarChar(512)
-    about       String?     @db.Text()
-    role        Role        @default(USER)
-    posts       Post[]
+    id              Int             @id @default(autoincrement())
+    email           String          @db.VarChar(255) @unique()
+    firstName       String          @db.VarChar(255)
+    lastName        String          @db.VarChar(255)
+    password        String          @db.VarChar(512)
+    about           String?         @db.Text()
+    role            Role            @default(USER)
+    posts           Post[]
+    favourites      Favourites[]
+}
+
+model Favourites {
+    userId          Int
+    postId          Int
+    post            Post            @relation(fields: [postId], references: [id])
+    user            User            @relation(fields: [userId], references: [id])
+    createdAt       DateTime        @default(now()) @db.Timestamp(6)
+    @@id([postId, userId])
 }
 
 enum Role {

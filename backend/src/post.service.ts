@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common'
+import { Injectable, NotFoundException } from '@nestjs/common'
 import { PrismaService } from './prisma.service'
 import { Post, Prisma } from '@prisma/client'
 import type PostDto from './post.dto'
@@ -50,6 +50,44 @@ export class PostService {
         } catch (e) {
             console.error(e)
             return false
+        }
+    }
+
+    async toggleFavourite(id: number, userId: number): Promise<boolean> {
+        const post = await this.get({ id })
+        const user = await this.prisma.user.findUnique({ where: { id: userId } })
+        if (!post || !user) throw new NotFoundException(`Either post or user with specified id is not found. [ postId: ${ id }, userId: ${ userId } ]`)
+
+        try {
+            const data = { userId: user.id, postId: post.id }
+            const record = await this.prisma.favourites.findUnique({ where: { postId_userId: data } })
+            if (!record) {
+                await this.prisma.favourites.create({ data })
+                return true
+            }
+            else {
+                await this.prisma.favourites.delete({ where: { postId_userId: data } })
+                return false
+            }
+        }
+        catch (e) {
+            console.error(e)
+            throw new Error(`An error occurred while toggling the favourite state. [ postId: ${ id }, userId: ${ userId } ]`)
+        }
+    }
+
+    async getFavourites(id: number): Promise<number[]> {
+        const user = await this.prisma.user.findUnique({ where: { id } })
+        if (!user) throw new NotFoundException(`A user with specified id is not found. [ userId: ${ id } ]`)
+
+        try {
+            const data = { userId: user.id }
+            const records = await this.prisma.favourites.findMany({ where: data })
+            return records.map((record) => record.postId)
+        }
+        catch (e) {
+            console.error(e)
+            throw new Error(`An error occurred while reading the favourite posts. [ userId: ${ id } ]`)
         }
     }
 }

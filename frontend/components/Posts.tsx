@@ -4,19 +4,22 @@ import { useEffect, useState } from 'react'
 import Card from './Card'
 import { Pagination } from 'evergreen-ui'
 import { useRouter } from 'next/navigation'
-import { Post } from '@/util'
+import { Post, callAPI } from '@/util'
 
 interface Props {
     posts: Post[]
     pages: number
     editable?: boolean
+    favouritable?: boolean
     token?: string
     onUpdate?: (posts: Post[]) => void
 }
 
-export default ({ posts, pages, token, onUpdate, editable = false }: Props) => {
+export default ({ posts, pages, token, onUpdate, editable = false, favouritable = false }: Props) => {
     const [ page, setPage ] = useState(1)
     const [ localPosts, setPosts ] = useState<Post[]>([])
+    const [ favourites, setFavourites ] = useState<number[]>([])
+    const [ mounted, setMounted ] = useState(false)
     const router = useRouter()
 
     const postDeleted = (id: number) => {
@@ -36,8 +39,32 @@ export default ({ posts, pages, token, onUpdate, editable = false }: Props) => {
     const prevPage = () => page !== 1 ? updatePage(page - 1) : page
 
     useEffect(() => {
-        setPosts(posts)
-    }, [ posts ])
+        setPosts(
+            favourites.length ?
+                posts.map((post) => ({ ...post, saved: favourites.includes(post.id) }))
+                : posts
+        )
+    }, [ posts, favourites ])
+
+    useEffect(() => {
+        try {
+            if (!mounted && favouritable) {
+                callAPI<{
+                    ok: boolean,
+                    favourites: number[]
+                }>(
+                    '/api/post/favourites',
+                    { method: 'GET', token }
+                ).then(
+                    (response) => {
+                        setFavourites(response.favourites)
+                        setMounted(true)
+                    }
+                )
+            }
+        }
+        finally {}
+    })
 
     return (
         <>
@@ -48,6 +75,8 @@ export default ({ posts, pages, token, onUpdate, editable = false }: Props) => {
                         title={ post.title }
                         text={ post.content }
                         editable={ editable }
+                        favouritable={ favouritable }
+                        saved={ post.saved }
                         token={ token }
                         onDelete={ postDeleted }
                     />)
