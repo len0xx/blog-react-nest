@@ -47,7 +47,7 @@
     --card-border-rgb: 131, 134, 135;
 
     --label-color: #0A1433;
-    --blockquote-border: rgba(13, 13, 13, .1);
+    --blockquote-border: rgba(0, 0, 0, .2);
 
     --header-background: rgb(204, 208, 208);
     --header-title-color: #000;
@@ -107,7 +107,7 @@
         --card-border-rgb: 200, 200, 200;
 
         --label-color: #EBF0FF;
-        --blockquote-border: rgba(255, 255, 255, .1);
+        --blockquote-border: rgba(255, 255, 255, .2);
 
         --header-background: #000;
         --header-title-color: #FFF;
@@ -287,5 +287,6 @@ div[data-evergreen-toaster-container] {
 
 blockquote {
     border-left: 3px solid var(--blockquote-border);
-    padding-left: 1rem;
+    padding: 0.5rem 1rem;
+    margin: 0.5em 1.5em;
 }
