@@ -32,7 +32,7 @@ export class PostController {
     @Get()
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: 'Read all the posts'})
+    @ApiOkResponse({ description: 'Read all the posts' })
     async getPosts(@Query('author') author: string, @Query('page') currentPage: string): Promise<string> {
         const page = currentPage && !isNaN(+currentPage) ? +currentPage : 1
         const offset = (page - 1) * POSTS_AMOUNT
@@ -48,9 +48,9 @@ export class PostController {
     @HttpCode(HttpStatus.CREATED)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiCreatedResponse({ description: 'New post created successfully'})
+    @ApiCreatedResponse({ description: 'New post created successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
-    @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid'})
+    @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid' })
     async createPost(@Body() data: CreatePostDto, @Authorization() user: Omit<User, 'password'>): Promise<string> {
         if (
             !data.title ||
@@ -85,9 +85,9 @@ export class PostController {
     @Get(':id')
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: 'Read the post object'})
-    @ApiNotFoundResponse({ description: 'No posts found with passed id'})
-    @ApiBadRequestResponse({ description: 'Invalid post id'})
+    @ApiOkResponse({ description: 'Read the post object' })
+    @ApiNotFoundResponse({ description: 'No posts found with passed id' })
+    @ApiBadRequestResponse({ description: 'Invalid post id' })
     async getPost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (id) {
             const post = await this.postService.get({ id })
@@ -102,10 +102,10 @@ export class PostController {
     @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: 'Post updated successfully'})
+    @ApiOkResponse({ description: 'Post updated successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
-    @ApiNotFoundResponse({ description: 'No posts found with passed id'})
-    @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid'})
+    @ApiNotFoundResponse({ description: 'No posts found with passed id' })
+    @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid' })
     async updatePost(
         @Param('id', ParseIntPipe) id: number,
         @Body() data: PostDto,
@@ -128,9 +128,9 @@ export class PostController {
     @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: 'New post created successfully'})
+    @ApiOkResponse({ description: 'New post created successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
-    @ApiNotFoundResponse({ description: 'No posts found with passed id'})
+    @ApiNotFoundResponse({ description: 'No posts found with passed id' })
     async deletePost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
 
@@ -147,7 +147,7 @@ export class PostController {
     @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: ''})
+    @ApiOkResponse({ description: 'Read the list of posts added to favourite for authorized user' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
     async getFavourite(@Authorization() user: ExtendedUser): Promise<string> {
         try {
@@ -168,9 +168,9 @@ export class PostController {
     @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
-    @ApiOkResponse({ description: 'Post has been added to favourites for the specified user'})
+    @ApiOkResponse({ description: 'Post has been added to favourites for the specified user' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
-    @ApiBadRequestResponse({ description: 'Missing required param ("id") or it is invalid'})
+    @ApiBadRequestResponse({ description: 'Missing required param ("id") or it is invalid' })
     async toggleFavourites(@Param('id', ParseIntPipe) id: number, @Authorization() user: ExtendedUser): Promise<string> {
         try {
             const state = await this.postService.toggleFavourite(id, user.id)

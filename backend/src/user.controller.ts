@@ -18,8 +18,8 @@ export class UserController {
     @ApiTags('user')
     @Header('Content-Type', 'application/json')
     @HttpCode(HttpStatus.CREATED)
-    @ApiCreatedResponse({ description: 'A new user has been created'})
-    @ApiBadRequestResponse({ description: 'Missing required fields or invalid values (Nonmatching passwords or duplicated email)'})
+    @ApiCreatedResponse({ description: 'A new user has been created' })
+    @ApiBadRequestResponse({ description: 'Missing required fields or invalid values (Nonmatching passwords or duplicated email)' })
     async create(@Body() data: CreateUserDto): Promise<string> {
         if (!data.email || !data.firstName || !data.lastName || !data.password || !data.passwordRepeat) {
             throw new BadRequestException('Fields "email", "firstName", "lastName" and "password" are required')
@@ -55,9 +55,9 @@ export class UserController {
     @Post('auth')
     @ApiTags('user')
     @Header('Content-Type', 'application/json')
-    @ApiOkResponse({ description: 'User\'s data'})
-    @ApiBadRequestResponse({ description: 'Invalid email or password'})
-    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
+    @ApiOkResponse({ description: 'User\'s data' })
+    @ApiBadRequestResponse({ description: 'Invalid email or password' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
     async auth(@Body() data: AuthUserDto): Promise<string> {
         if (!data.email || !data.password) {
             throw new BadRequestException('Invalid "email" or "password"')
@@ -88,9 +88,9 @@ export class UserController {
     @Patch('update')
     @ApiTags('user')
     @Header('Content-Type', 'application/json')
-    @ApiOkResponse({ description: 'User has been updated'})
-    @ApiBadRequestResponse({ description: 'Missing data ("firstName", "lastName" and "about")'})
-    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
+    @ApiOkResponse({ description: 'User has been updated' })
+    @ApiBadRequestResponse({ description: 'Missing data ("firstName", "lastName" and "about")' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
     async update(@Body() data: UpdateUserDto, @Authorization() user: User): Promise<string> {
         if (!data.firstName && !data.lastName && !data.about) {
             throw new BadRequestException('Missing data ("firstName", "lastName" and "about")')
@@ -120,9 +120,9 @@ export class UserController {
     @Get()
     @Header('Content-Type', 'application/json')
     @ApiTags('user')
-    @ApiOkResponse({ description: 'Get authorized user\'s data'})
-    @ApiBadRequestResponse({ description: 'Could not fetch data for authorized user'})
-    @ApiUnauthorizedResponse({ description: 'Unauthorized request'})
+    @ApiOkResponse({ description: 'Get authorized user\'s data' })
+    @ApiBadRequestResponse({ description: 'Could not fetch data for authorized user' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
     async getAuthorized(@Authorization() user: ExtendedUser): Promise<string> {
         if (!user) {
             throw new UnauthorizedException('You must authorize first to access this resource')
@@ -143,8 +143,8 @@ export class UserController {
     @Get(':id')
     @Header('Content-Type', 'application/json')
     @ApiTags('user')
-    @ApiOkResponse({ description: 'Get user data by id'})
-    @ApiBadRequestResponse({ description: 'Could not fetch data for specified user'})
+    @ApiOkResponse({ description: 'Get user data by id' })
+    @ApiBadRequestResponse({ description: 'Could not fetch data for specified user' })
     async getById(@Param('id', ParseIntPipe) id: number): Promise<string> {
         try {
             const data = await this.userService.get({ id }, true)
