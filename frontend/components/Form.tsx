@@ -17,7 +17,7 @@ interface Props {
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
     onLoadingUpdate?: (state: boolean) => void | Promise<void>
-    onSubmit?: (state: SubmitState, response?: Record<string, unknown>) => void | Promise<void>
+    onSubmit?: (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
 }
 
 export enum SubmitState {
@@ -47,6 +47,7 @@ export default ({
         e.preventDefault()
         let response: Record<string, unknown> | undefined
         let localState = SubmitState.Unknown
+        let localError: string | undefined
         setError(errorMessage)
         if (onLoadingUpdate) await onLoadingUpdate(true)
 
@@ -60,11 +61,12 @@ export default ({
                 setError(e.message)
             }
             console.error(e)
+            localError = ( e as Error ).message
             localState = SubmitState.Error
         }
         finally {
             setState(localState)
-            if (onSubmit) await onSubmit(localState, response)
+            if (onSubmit) await onSubmit(localState, response, localError)
             if (onLoadingUpdate) await onLoadingUpdate(false)
         }
     }
