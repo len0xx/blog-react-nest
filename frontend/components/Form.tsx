@@ -16,7 +16,8 @@ interface Props {
     successMessage?: React.ReactNode
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
-    onSubmit?: (state: SubmitState, response?: Record<string, unknown>) => Promise<void>
+    onLoadingUpdate?: (state: boolean) => void | Promise<void>
+    onSubmit?: (state: SubmitState, response?: Record<string, unknown>) => void | Promise<void>
 }
 
 export enum SubmitState {
@@ -36,6 +37,7 @@ export default ({
     successMessage,
     errorMessage,
     validation,
+    onLoadingUpdate,
     onSubmit
 }: Props) => {
     const [ state, setState ] = useState(SubmitState.Unknown)
@@ -46,6 +48,7 @@ export default ({
         let response: Record<string, unknown> | undefined
         let localState = SubmitState.Unknown
         setError(errorMessage)
+        if (onLoadingUpdate) await onLoadingUpdate(true)
 
         try {
             if (validation) validateSchema(validation, payload)
@@ -62,6 +65,7 @@ export default ({
         finally {
             setState(localState)
             if (onSubmit) await onSubmit(localState, response)
+            if (onLoadingUpdate) await onLoadingUpdate(false)
         }
     }
 
