@@ -55,7 +55,7 @@ export default function CardComponent({ title, text, id, editable = false, favou
             else toaster.success('The post has been removed from favourites')
         }
         catch (e) {
-            console.error(`The post with id ${ id } was saved to favourites`)
+            console.error(`The post with id ${ id } was not saved to favourites`)
             toaster.danger('The post was not saved to favourites due to an unexpected error', { description: 'Please try again later' })
         }
         finally {

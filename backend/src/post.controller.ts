@@ -144,7 +144,6 @@ export class PostController {
     }
 
     @Get('favourites')
-    @UseGuards(AuthGuard)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Read the list of posts added to favourite for authorized user' })
@@ -165,7 +164,7 @@ export class PostController {
     }
 
     @Post('favourite/:id')
-    @UseGuards(AuthGuard)
+    @HttpCode(HttpStatus.OK)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Post has been added to favourites for the specified user' })
