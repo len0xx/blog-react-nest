@@ -15,7 +15,9 @@ interface Props {
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
     onLoadingUpdate?: (state: boolean) => void | Promise<void>
-    onSubmit?: (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
+    onComplete?: (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
+    onSuccess?: (response?: Record<string, unknown>) => void | Promise<void>
+    onError?: (error?: string) => void | Promise<void>
 }
 
 export enum SubmitState {
@@ -39,7 +41,9 @@ export default forwardRef<FormRef, Props>(
         method = 'GET',
         displayAlert = false,
         onLoadingUpdate,
-        onSubmit
+        onComplete,
+        onSuccess,
+        onError
     }: Props, ref: Ref<FormRef>) => {
         const form = useRef<HTMLFormElement>(null)
         const [ state, setState ] = useState(SubmitState.Awaiting)
@@ -52,12 +56,13 @@ export default forwardRef<FormRef, Props>(
             let localError: string | undefined
             setError(errorMessage)
             if (onLoadingUpdate) await onLoadingUpdate(true)
+            const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
 
             try {
                 if (validation && details && details.payload) validateSchema(validation, details.payload)
-                const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
                 response = await callAPI(path, options)
                 localState = SubmitState.Success
+                if (onSuccess) onSuccess(response)
             }
             catch (e) {
                 console.error(e)
@@ -68,11 +73,12 @@ export default forwardRef<FormRef, Props>(
                     }
                 }
                 localState = SubmitState.Error
+                if (onError) onError(localError)
             }
             finally {
                 setState(localState)
-                if (onSubmit) await onSubmit(localState, response, localError)
                 if (onLoadingUpdate) await onLoadingUpdate(false)
+                if (onComplete) await onComplete(localState, response, localError)
             }
         }
 
