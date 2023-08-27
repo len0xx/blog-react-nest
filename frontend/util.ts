@@ -69,8 +69,8 @@ export const callAPI = async <APIResponse = any, Payload = any>(path: string | U
 
         try {
             const response = await res.json()
-            if (response.error) errorText = response.error
-            else if (response.message) errorText = response.message
+            if (response.message) errorText = response.error
+            else if (response.error) errorText = response.message
         }
         finally {
             throw new HTTPError(res.status, errorText)
