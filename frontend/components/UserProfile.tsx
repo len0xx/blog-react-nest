@@ -3,9 +3,9 @@
 import styles from '@/app/styles/profile.module.css'
 import { Post, User, callAPI } from "@/util"
 import Posts from "./Posts"
-import { ChangeEvent, FormEvent, useState } from 'react'
-import { Button, InlineAlert, Label, TextInput, TextareaField } from 'evergreen-ui'
-import { API_ENDPOINT } from '@/config'
+import { ChangeEvent, useState } from 'react'
+import { Button, Label, TextInput, TextareaField } from 'evergreen-ui'
+import Form from './Form'
 
 interface Props {
     posts: Post[]
@@ -25,9 +25,6 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
     const [ localUser, setUser ] = useState<User>(user)
     const [ isLoading, setIsLoading ] = useState(false)
-    const [ success, setSuccess ] = useState(false)
-    const [ error, setError ] = useState(false)
-    const [ errorText, setErrorText ] = useState('')
     const [ firstName, setFirstName ] = useState(user.firstName)
     const [ lastName, setLastName ] = useState(user.lastName)
     const [ about, setAbout ] = useState(user.about)
@@ -36,36 +33,19 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
     const switchMode = () => setMode(mode === AllowedModes.Viewing ? AllowedModes.Editing : AllowedModes.Viewing)
 
     const fetchUser = async () => {
-        const getOptions = {
-            method: 'GET',
-            headers: { 'Content-Type': 'application/json', 'Authorization': token! }
+        try {
+            const response = await callAPI<User>(`/api/user`, { method: 'GET', token })
+            setUser(response)
         }
-
-        const res = await fetch(`${ API_ENDPOINT }/api/user`, getOptions)
-        if (!res.ok) return null
-        const response = await res.json()
-        setUser(response)
+        finally {}
     }
 
-    const updateProfile = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setIsLoading(true)
-
-        const payload = { firstName, lastName, about }
-
-        try {
-            await callAPI('/api/user/update', { method: 'PATCH', payload, token })
-            setError(false)
-            setSuccess(true)
-            await fetchUser()
-        }
-        catch (e) {
-            setSuccess(false)
-            setError(true)
-            setErrorText((e as Error).message || 'An error occurred. Please try again later')
-        }
-        finally {
-            setIsLoading(false)
+    const details = {
+        token,
+        payload: {
+            firstName,
+            lastName,
+            about
         }
     }
 
@@ -90,7 +70,16 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                             </div> }
                         </>
                         :
-                        <form onSubmit={ updateProfile }>
+                        <Form
+                            action="/api/user/update"
+                            method="PATCH"
+                            details={ details }
+                            displayMsg
+                            onLoadingUpdate={ setIsLoading }
+                            successMessage="Changes have been saved"
+                            errorMessage="Unexpected error"
+                            onSuccess={ fetchUser }
+                        >
                             <Label className="form-label" htmlFor="firstName" marginBottom={ 4 } display="block">
                                 First Name
                             </Label>
@@ -131,9 +120,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 <Button type="button" appearance="default" onClick={ switchMode }>Go back</Button>
                             </div>
                             <br />
-                            { success && <InlineAlert intent='success'>Changes have been saved!</InlineAlert> }
-                            { error && <InlineAlert intent='danger'>{ errorText }</InlineAlert> }
-                        </form>
+                        </Form>
                     }
                     <br />
                     <br />
