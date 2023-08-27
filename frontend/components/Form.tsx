@@ -19,7 +19,7 @@ interface Props {
 }
 
 export enum SubmitState {
-    Unknown = 0,
+    Awaiting = 0,
     Success = 1,
     Error = 2
 }
@@ -28,67 +28,69 @@ export interface FormRef {
     requestSubmit: () => void
 }
 
-export default forwardRef<FormRef, Props>(({
-    children,
-    path,
-    details,
-    successMessage,
-    errorMessage,
-    validation,
-    method = 'GET',
-    displayAlert = false,
-    onLoadingUpdate,
-    onSubmit
-}: Props, ref: Ref<FormRef>) => {
-    const form = useRef<HTMLFormElement>(null)
-    const [ state, setState ] = useState(SubmitState.Unknown)
-    const [ error, setError ] = useState(errorMessage)
+export default forwardRef<FormRef, Props>(
+    ({
+        children,
+        path,
+        details,
+        successMessage,
+        errorMessage,
+        validation,
+        method = 'GET',
+        displayAlert = false,
+        onLoadingUpdate,
+        onSubmit
+    }: Props, ref: Ref<FormRef>) => {
+        const form = useRef<HTMLFormElement>(null)
+        const [ state, setState ] = useState(SubmitState.Awaiting)
+        const [ error, setError ] = useState(errorMessage)
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        let response: Record<string, unknown> | undefined
-        let localState = SubmitState.Unknown
-        let localError: string | undefined
-        setError(errorMessage)
-        if (onLoadingUpdate) await onLoadingUpdate(true)
+        const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault()
+            let response: Record<string, unknown> | undefined
+            let localState = SubmitState.Awaiting
+            let localError: string | undefined
+            setError(errorMessage)
+            if (onLoadingUpdate) await onLoadingUpdate(true)
 
-        try {
-            if (validation && details && details.payload) validateSchema(validation, details.payload)
-            const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
-            response = await callAPI(path, options)
-            localState = SubmitState.Success
-        }
-        catch (e) {
-            console.error(e)
-            if (e instanceof Error) {
-                localError = e.message
-                if (e instanceof ValidationError) {
-                    setError(localError)
-                }
+            try {
+                if (validation && details && details.payload) validateSchema(validation, details.payload)
+                const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
+                response = await callAPI(path, options)
+                localState = SubmitState.Success
             }
-            localState = SubmitState.Error
+            catch (e) {
+                console.error(e)
+                if (e instanceof Error) {
+                    localError = e.message
+                    if (e instanceof ValidationError) {
+                        setError(localError)
+                    }
+                }
+                localState = SubmitState.Error
+            }
+            finally {
+                setState(localState)
+                if (onSubmit) await onSubmit(localState, response, localError)
+                if (onLoadingUpdate) await onLoadingUpdate(false)
+            }
         }
-        finally {
-            setState(localState)
-            if (onSubmit) await onSubmit(localState, response, localError)
-            if (onLoadingUpdate) await onLoadingUpdate(false)
+
+        const publicRef = {
+            requestSubmit: () => form.current ? form.current.requestSubmit() : null
         }
+
+        useImperativeHandle(ref, () => publicRef)
+
+        return (
+            <form onSubmit={ handleSubmit } ref={ form }>
+                { children }
+                { displayAlert && state !== SubmitState.Awaiting && <>
+                    <InlineAlert marginTop={ 16 } intent={ state === SubmitState.Success ? 'success' : 'danger' }>
+                        { state === SubmitState.Success ? successMessage : ( error || errorMessage ) }
+                    </InlineAlert>
+                </> }
+            </form>
+        )
     }
-
-    const publicRef = {
-        requestSubmit: () => form.current ? form.current.requestSubmit() : null
-    }
-
-    useImperativeHandle(ref, () => publicRef)
-
-    return (
-        <form onSubmit={ handleSubmit } ref={ form }>
-            { children }
-            { displayAlert && state !== SubmitState.Unknown && <>
-                <InlineAlert marginTop={ 16 } intent={ state === SubmitState.Success ? 'success' : 'danger' }>
-                    { state === SubmitState.Success ? successMessage : ( error || errorMessage ) }
-                </InlineAlert>
-            </> }
-        </form>
-    )
-})
+)
