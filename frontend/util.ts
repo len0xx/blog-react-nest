@@ -49,7 +49,7 @@ export const extractHeader = (headers: Headers | [string, string][] | undefined,
     return filtered.length ? filtered[0][1] : null
 }
 
-export const callAPI = async <APIResponse = any, Payload = any>(path: string, { method, token, payload, headers }: APIOptions<Payload>): Promise<APIResponse> => {
+export const callAPI = async <APIResponse = any, Payload = any>(path: string | URL, { method, token, payload, headers }: APIOptions<Payload>): Promise<APIResponse> => {
     let contentType = 'application/json'
     if (extractHeader(headers, 'Content-Type')) contentType = extractHeader(headers, 'Content-Type')!
 
@@ -62,7 +62,8 @@ export const callAPI = async <APIResponse = any, Payload = any>(path: string, { 
         body: (contentType === 'application/json' ? JSON.stringify(payload) : payload) as BodyInit
     }
 
-    const res = await fetch(`${ API_ENDPOINT }${ path }`, options)
+    const finalUrl = path instanceof URL ? path.toString() : `${ API_ENDPOINT }${ path }`
+    const res = await fetch(finalUrl, options)
     if (!res.ok) {
         let errorText = res.statusText
 

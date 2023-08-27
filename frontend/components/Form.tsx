@@ -8,7 +8,7 @@ import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
 interface Props {
     children?: React.ReactNode
     method?: HTTP_METHOD
-    path: string
+    path: string | URL
     displayAlert?: boolean
     token?: string
     payload?: any
