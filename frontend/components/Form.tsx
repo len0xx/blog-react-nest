@@ -3,7 +3,7 @@
 import { ValidationError, ValidationSchema, callAPI, validateSchema } from "@/util"
 import { InlineAlert } from "evergreen-ui"
 import { HTTP_METHOD } from "next/dist/server/web/http"
-import { useState } from "react"
+import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
 
 interface Props {
     children?: React.ReactNode
@@ -26,20 +26,25 @@ export enum SubmitState {
     Error = 2
 }
 
-export default ({
+export interface FormRef {
+    requestSubmit: () => void
+}
+
+export default forwardRef<FormRef, Props>(({
     children,
-    method = 'GET',
     path,
-    displayAlert = false,
     token,
     payload,
     headers,
     successMessage,
     errorMessage,
     validation,
+    method = 'GET',
+    displayAlert = false,
     onLoadingUpdate,
     onSubmit
-}: Props) => {
+}: Props, ref: Ref<FormRef>) => {
+    const form = useRef<HTMLFormElement>(null)
     const [ state, setState ] = useState(SubmitState.Unknown)
     const [ error, setError ] = useState(errorMessage)
 
@@ -71,8 +76,14 @@ export default ({
         }
     }
 
+    const publicRef = {
+        requestSubmit: () => form.current ? form.current.requestSubmit() : null
+    }
+
+    useImperativeHandle(ref, () => publicRef)
+
     return (
-        <form onSubmit={ handleSubmit }>
+        <form onSubmit={ handleSubmit } ref={ form }>
             { children }
             { displayAlert && state !== SubmitState.Unknown && <>
                 <InlineAlert marginTop={ 16 } intent={ state === SubmitState.Success ? 'success' : 'danger' }>
@@ -81,4 +92,4 @@ export default ({
             </> }
         </form>
     )
-}
+})
