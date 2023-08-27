@@ -31,7 +31,7 @@ export interface User {
 
 export type Author = User
 
-export interface APIOptions<T> {
+export interface APIOptions<T = any> {
     method: HTTP_METHOD
     token?: string
     payload?: T

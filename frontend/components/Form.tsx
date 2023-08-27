@@ -5,6 +5,11 @@ import { InlineAlert } from "evergreen-ui"
 import { HTTP_METHOD } from "next/dist/server/web/http"
 import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
 
+export type CompleteFn = (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
+export type LoadingUpdateFn = (state: boolean) => void | Promise<void>
+export type SuccessFn = (response?: Record<string, unknown>) => void | Promise<void>
+export type ErrorFn = (error?: string) => void | Promise<void>
+
 interface Props {
     children?: React.ReactNode
     method?: HTTP_METHOD
@@ -14,10 +19,10 @@ interface Props {
     successMessage?: React.ReactNode
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
-    onLoadingUpdate?: (state: boolean) => void | Promise<void>
-    onComplete?: (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
-    onSuccess?: (response?: Record<string, unknown>) => void | Promise<void>
-    onError?: (error?: string) => void | Promise<void>
+    onLoadingUpdate?: LoadingUpdateFn
+    onComplete?: CompleteFn
+    onSuccess?: SuccessFn
+    onError?: ErrorFn
 }
 
 export enum SubmitState {
