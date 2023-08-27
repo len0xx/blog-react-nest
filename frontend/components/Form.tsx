@@ -1,6 +1,6 @@
 'use client'
 
-import { ValidationError, ValidationSchema, callAPI, validateSchema } from "@/util"
+import { APIOptions, ValidationError, ValidationSchema, callAPI, validateSchema } from "@/util"
 import { InlineAlert } from "evergreen-ui"
 import { HTTP_METHOD } from "next/dist/server/web/http"
 import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
@@ -10,9 +10,7 @@ interface Props {
     method?: HTTP_METHOD
     path: string | URL
     displayAlert?: boolean
-    token?: string
-    payload?: any
-    headers?: Headers | [string, string][]
+    details?: Omit<APIOptions<Record<string, unknown>>, 'method'>
     successMessage?: React.ReactNode
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
@@ -33,9 +31,7 @@ export interface FormRef {
 export default forwardRef<FormRef, Props>(({
     children,
     path,
-    token,
-    payload,
-    headers,
+    details,
     successMessage,
     errorMessage,
     validation,
@@ -57,8 +53,9 @@ export default forwardRef<FormRef, Props>(({
         if (onLoadingUpdate) await onLoadingUpdate(true)
 
         try {
-            if (validation) validateSchema(validation, payload)
-            response = await callAPI(path, { method, headers, payload, token })
+            if (validation && details && details.payload) validateSchema(validation, details.payload)
+            const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
+            response = await callAPI(path, options)
             localState = SubmitState.Success
         }
         catch (e) {
