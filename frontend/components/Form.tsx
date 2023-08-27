@@ -66,7 +66,9 @@ export default forwardRef<FormRef, Props>(({
                 setError(e.message)
             }
             console.error(e)
-            localError = ( e as Error ).message
+            if (e instanceof Error) {
+                localError = e.message
+            }
             localState = SubmitState.Error
         }
         finally {
