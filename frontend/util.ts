@@ -73,7 +73,7 @@ export const callAPI = async <APIResponse = any, Payload = any>(path: string | U
             else if (response.message) errorText = response.message
         }
         finally {
-            throw new HTTPError(res.status, res.statusText)
+            throw new HTTPError(res.status, errorText)
         }
     }
     return await res.json()
@@ -86,7 +86,7 @@ export interface ValidationRule<T = any> {
     maxLen?: number
     minValue?: T
     maxValue?: T
-    match?: T
+    match?: T | (() => T)
     matchRegex?: RegExp
     contains?: string
     notContains?: string
@@ -158,8 +158,15 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
             }
         }
 
-        if (rule.match && val !== rule.match) {
-            throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
+        if (rule.match) {
+            if (typeof rule.match === 'function') {
+                if (rule.match() !== val) {
+                    throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
+                }
+            }
+            else if (rule.match !== val) {
+                throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
+            }
         }
 
         if (rule.matchRegex && !rule.matchRegex.test(val as string)) {
