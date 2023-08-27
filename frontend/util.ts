@@ -88,12 +88,13 @@ export interface ValidationRule<T = any> {
     maxValue?: T
     match?: T | (() => T)
     matchRegex?: RegExp
-    contains?: string
-    notContains?: string
+    contains?: string | (string | number)[][]
+    notContains?: string | (string | number)[][]
     isIn?: T[]
     notIn?: T[]
     customValidation?: (input: T) => boolean
     errorText?: string
+    alphaNum?: boolean
 }
 
 export type ValidationSchema = Record<string, ValidationRule>
@@ -106,6 +107,17 @@ export class ValidationError extends Error {
 
 export interface ObjectHasLength extends Object {
     length: number
+}
+
+export const includesAny = (input: string, arr: string[]) => {
+    let flag = false
+    for (const char of arr) {
+        if (input.includes(char)) {
+            flag = true
+            break
+        }
+    }
+    return flag
 }
 
 export const validateSchema = <T>(schema: ValidationSchema, data: Record<string, T>): boolean => {
@@ -173,12 +185,68 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
             throw new ValidationError(err || `Field ${ key } is expected to match the certain Regular Expression, but it does not`)
         }
 
-        if (rule.contains && val && !(typeof val === 'string' && val.includes(rule.contains))) {
-            throw new ValidationError(err || `Field ${ key } is expected to contain ${ rule.contains }, but it does not`)
+        if (rule.contains && val && (typeof val === 'string' || Array.isArray(val))) {
+            if (typeof rule.contains === 'string') {
+                if (!(typeof val === 'string' && val.includes(rule.contains))) {
+                    throw new ValidationError(err || `Field ${ key } is expected to contain ${ rule.contains }, but it does not`)
+                }
+            }
+            else {
+                let failure: (string | number)[] = []
+                let flag = true
+
+                for (const collection of rule.contains) {
+                    let localFlag = false
+                    for (const item of collection) {
+                        if (val.includes(item.toString())) {
+                            localFlag = true
+                            break
+                        }
+                    }
+
+                    if (!localFlag) {
+                        failure = collection
+                        flag = false
+                        break
+                    }
+                }
+
+                if (!flag) {
+                    throw new ValidationError(err || `Field ${ key } is expected to contain at least one value from the list: ${ failure.join(', ') }, but it does not`)
+                }
+            }
         }
 
-        if (rule.notContains && val && !(typeof val === 'string' && !val.includes(rule.notContains))) {
-            throw new ValidationError(err || `Field ${ key } is expected not to contain ${ rule.notContains }, but it does`)
+        if (rule.notContains && val && (typeof val === 'string' || Array.isArray(val))) {
+            if (typeof rule.notContains === 'string') {
+                if (typeof val === 'string' && val.includes(rule.notContains)) {
+                    throw new ValidationError(err || `Field ${ key } is expected not to contain ${ rule.notContains }, but it does`)
+                }
+            }
+            else {
+                let failure: (string | number)[] = []
+                let flag = true
+
+                for (const collection of rule.notContains) {
+                    let localFlag = false
+                    for (const item of collection) {
+                        if (!val.includes(item.toString())) {
+                            localFlag = true
+                            break
+                        }
+                    }
+
+                    if (localFlag) {
+                        failure = collection
+                        flag = false
+                        break
+                    }
+                }
+
+                if (!flag) {
+                    throw new ValidationError(err || `Field ${ key } is expected not to contain any value from the list: ${ failure.join(', ') }, but it does`)
+                }
+            }
         }
 
         if (rule.isIn && val && !rule.isIn.includes(val)) {
@@ -192,6 +260,15 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
         if (rule.customValidation) {
             if (!rule.customValidation(val)) {
                 throw new ValidationError(err || `Field ${ key } failed on custom validation`)
+            }
+        }
+
+        if (rule.alphaNum && val && typeof val === 'string') {
+            const alpha = (`qwertyuiopasdfghjklzxcvbnm` + `QWERTYUIOPASDFGHJKLZXCVBNM`).split('')
+            const num = '0123456789'.split('')
+
+            if (!(includesAny(val, alpha) && includesAny(val, num))) {
+                throw new ValidationError(err || `Field ${ key } is expected to contain at least 1 numeric character and 1 latin letter`)
             }
         }
     }
