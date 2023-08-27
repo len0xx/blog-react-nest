@@ -7,7 +7,7 @@ import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
 
 export type FormDetails = Omit<APIOptions<Record<string, unknown>>, 'method'>
 export type SubmitFn = (path?: string | URL, method?: HTTP_METHOD, details?: FormDetails) => void | Promise<void>
-export type CompleteFn = (state: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
+export type CompleteFn = (state?: SubmitState, response?: Record<string, unknown>, error?: string) => void | Promise<void>
 export type LoadingUpdateFn = (state: boolean) => void | Promise<void>
 export type SuccessFn = (response?: Record<string, unknown>) => void | Promise<void>
 export type ErrorFn = (error?: string) => void | Promise<void>
@@ -15,7 +15,7 @@ export type ErrorFn = (error?: string) => void | Promise<void>
 interface Props {
     children?: React.ReactNode
     method?: HTTP_METHOD
-    path: string | URL
+    action?: string | URL
     displayAlert?: boolean
     details?: FormDetails
     successMessage?: React.ReactNode
@@ -39,11 +39,17 @@ export interface FormRef {
     requestSubmit: () => void
 }
 
+export class FormError extends Error {
+    constructor(message: string) {
+        super(message)
+    }
+}
+
 export default forwardRef<FormRef, Props>(
     (
         {
             children,
-            path,
+            action,
             details,
             successMessage,
             errorMessage,
@@ -76,10 +82,11 @@ export default forwardRef<FormRef, Props>(
             try {
                 if (validation && details && details.payload) validateSchema(validation, details.payload)
                 if (onSubmit) {
-                    await onSubmit(path, method, details)
+                    await onSubmit(action, method, details)
                 }
                 else {
-                    response = await callAPI(path, options)
+                    if (!action) throw new FormError('"action" is not specified')
+                    response = await callAPI(action, options)
                 }
                 localState = SubmitState.Success
                 if (onSuccess) onSuccess(response)
@@ -87,8 +94,9 @@ export default forwardRef<FormRef, Props>(
             catch (e) {
                 console.error(e)
                 if (e instanceof Error) {
+                    if (e instanceof FormError) throw e
                     localError = e.message
-                        setError(localError)
+                    setError(localError)
                 }
                 localState = SubmitState.Error
                 if (onError) onError(localError)
