@@ -1,6 +1,6 @@
 'use client'
 
-import { APIOptions, ValidationError, ValidationSchema, callAPI, validateSchema } from "@/util"
+import { APIOptions, ValidationSchema, callAPI, validateSchema } from "@/util"
 import { InlineAlert } from "evergreen-ui"
 import { HTTP_METHOD } from "next/dist/server/web/http"
 import { Ref, forwardRef, useImperativeHandle, useRef, useState } from "react"
@@ -68,6 +68,7 @@ export default forwardRef<FormRef, Props>(
             let response: Record<string, unknown> | undefined
             let localState = SubmitState.Awaiting
             let localError: string | undefined
+            setState(localState)
             setError(errorMessage)
             if (onLoadingUpdate) await onLoadingUpdate(true)
             const options: APIOptions<Record<string, unknown>> = details ? { method, ...details } : { method }
@@ -87,9 +88,7 @@ export default forwardRef<FormRef, Props>(
                 console.error(e)
                 if (e instanceof Error) {
                     localError = e.message
-                    if (e instanceof ValidationError) {
                         setError(localError)
-                    }
                 }
                 localState = SubmitState.Error
                 if (onError) onError(localError)
