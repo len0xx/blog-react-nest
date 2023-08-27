@@ -84,6 +84,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 First Name
                             </Label>
                             <TextInput
+                                id="firstName"
                                 name="firstName"
                                 placeholder="First Name"
                                 width={ 400 }
@@ -96,6 +97,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 Last Name
                             </Label>
                             <TextInput 
+                                id="lastName"
                                 name="lastName"
                                 placeholder="Last Name"
                                 width={ 400 }
@@ -104,10 +106,11 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                             />
                             <br />
                             <br />
-                            <Label className="form-label" htmlFor="lastName" display="block">
+                            <Label className="form-label" htmlFor="about" display="block">
                                 About
                             </Label>
                             <TextareaField
+                                id="about"
                                 name="about"
                                 marginBottom={ 0 }
                                 maxWidth={ 400 }
