@@ -31,20 +31,23 @@ export interface FormRef {
 }
 
 export default forwardRef<FormRef, Props>(
-    ({
-        children,
-        path,
-        details,
-        successMessage,
-        errorMessage,
-        validation,
-        method = 'GET',
-        displayAlert = false,
-        onLoadingUpdate,
-        onComplete,
-        onSuccess,
-        onError
-    }: Props, ref: Ref<FormRef>) => {
+    (
+        {
+            children,
+            path,
+            details,
+            successMessage,
+            errorMessage,
+            validation,
+            method = 'GET',
+            displayAlert = false,
+            onLoadingUpdate,
+            onComplete,
+            onSuccess,
+            onError
+        }: Props,
+        ref: Ref<FormRef>
+    ) => {
         const form = useRef<HTMLFormElement>(null)
         const [ state, setState ] = useState(SubmitState.Awaiting)
         const [ error, setError ] = useState(errorMessage)
