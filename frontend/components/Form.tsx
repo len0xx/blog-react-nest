@@ -21,6 +21,7 @@ interface Props {
     successMessage?: React.ReactNode
     errorMessage?: React.ReactNode
     validation?: ValidationSchema
+    className?: string
     onSubmit?: SubmitFn
     onLoadingUpdate?: LoadingUpdateFn
     onComplete?: CompleteFn
@@ -47,6 +48,7 @@ export default forwardRef<FormRef, Props>(
             successMessage,
             errorMessage,
             validation,
+            className,
             method = 'GET',
             displayAlert = false,
             onSubmit,
@@ -106,7 +108,7 @@ export default forwardRef<FormRef, Props>(
         useImperativeHandle(ref, () => publicRef)
 
         return (
-            <form onSubmit={ handleSubmit } ref={ form }>
+            <form onSubmit={ handleSubmit } ref={ form } className={ className }>
                 { children }
                 { displayAlert && state !== SubmitState.Awaiting && <>
                     <InlineAlert marginTop={ 16 } intent={ state === SubmitState.Success ? 'success' : 'danger' }>
