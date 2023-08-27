@@ -16,7 +16,7 @@ interface Props {
     children?: React.ReactNode
     method?: HTTP_METHOD
     action?: string | URL
-    displayAlert?: boolean
+    displayMsg?: boolean
     details?: FormDetails
     successMessage?: React.ReactNode
     errorMessage?: React.ReactNode
@@ -56,7 +56,7 @@ export default forwardRef<FormRef, Props>(
             validation,
             className,
             method = 'GET',
-            displayAlert = false,
+            displayMsg = false,
             onSubmit,
             onLoadingUpdate,
             onComplete,
@@ -117,7 +117,7 @@ export default forwardRef<FormRef, Props>(
         return (
             <form onSubmit={ handleSubmit } ref={ form } className={ className }>
                 { children }
-                { displayAlert && state !== SubmitState.Awaiting && <>
+                { displayMsg && state !== SubmitState.Awaiting && <>
                     <InlineAlert marginTop={ 16 } intent={ state === SubmitState.Success ? 'success' : 'danger' }>
                         { state === SubmitState.Success ? successMessage : ( error || errorMessage ) }
                     </InlineAlert>
