@@ -62,12 +62,12 @@ export default forwardRef<FormRef, Props>(({
             localState = SubmitState.Success
         }
         catch (e) {
-            if (e instanceof ValidationError) {
-                setError(e.message)
-            }
             console.error(e)
             if (e instanceof Error) {
                 localError = e.message
+                if (e instanceof ValidationError) {
+                    setError(localError)
+                }
             }
             localState = SubmitState.Error
         }
