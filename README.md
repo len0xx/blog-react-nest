@@ -1,8 +1,8 @@
-# React + NestJS Blog
+# React + NestJS Blog App
 
 Minimalistic but fully functional blog application
 
-### Technologies
+## Technologies
 
 - React (Frontend)
 - Next (BFF)
@@ -12,18 +12,13 @@ Minimalistic but fully functional blog application
 - Nginx (Exposing both frontend and backend services in single domain space (and also static files serving))
 - Docker
 
-### Features
+### Overall structure
+<img width="1637" alt="image" src="https://github.com/len0xx/blog-react-nest/assets/21990466/c548712d-573b-422a-8139-e67fd31b8c32">
 
-- **WYSIWYG Editor** (by TipTap)
-- **Authorization** (by NextAuth)
-- Comments (Coming soon)
-
-## Internal structure
-
-### Services (Docker containers)
-
-- Frontend (Next.js application)
-- Backend (Nest.js application for general API)
-- DB (PostgreSQL instance)
-- Images (Another Nest.js application for uploading images)
-- Nginx router
+## Roadmap
+- [x] Basic authorization
+- [x] WYSIWYG editor
+- [x] Image uploading
+- [x] Swagger REST API Docs
+- [ ] Post comments
+- [ ] Headless admin panel
