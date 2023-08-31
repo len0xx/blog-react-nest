@@ -79,7 +79,11 @@ export const callAPI = async <APIResponse = any, Payload = any>(path: string | U
     return await res.json()
 }
 
+export type AllowedTypes = 'string' | 'number' | 'array' | 'object' | 'boolean' | 'bigint' | 'undefined' | 'symbol'
+export const allowedTypes: AllowedTypes[] = [ 'string', 'number', 'boolean', 'bigint', 'undefined', 'object' ]
+
 export interface ValidationRule<T = any> {
+    type?: AllowedTypes
     required?: boolean
     isNumeric?: boolean
     minLen?: number
@@ -137,6 +141,17 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
         const rule = schema[key]
         const val = data[key]
         const err = rule.errorText
+
+        if (rule.type) {
+            if (allowedTypes.includes(rule.type)) {
+                if (typeof val !== rule.type) {
+                    throw new ValidationError(err || `Field ${ key } is expected to be of type '${ rule.type }', but its type is ${ typeof val }`)
+                }
+            }
+            else if (rule.type === 'array' && !Array.isArray(val)) {
+                throw new ValidationError(err || `Field ${ key } is expected to be of type 'array', but it is not an array`)
+            }
+        }
 
         if (rule.required && !(typeof val === 'boolean' && val === false) && !val) {
             throw new ValidationError(err || `Field ${ key } is required by the provided schema, but value is "${ val }"`)
