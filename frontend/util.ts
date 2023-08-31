@@ -91,6 +91,7 @@ export interface ValidationRule<T = any> {
     minValue?: T
     maxValue?: T
     match?: T | (() => T)
+    dontMatch?: T | (() => T)
     matchRegex?: RegExp
     contains?: string | (string | number)[][]
     notContains?: string | (string | number)[][]
@@ -205,6 +206,17 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
             }
             else if (rule.match !== val) {
                 throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
+            }
+        }
+
+        if (rule.dontMatch) {
+            if (typeof rule.dontMatch === 'function') {
+                if (rule.dontMatch() === val) {
+                    throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
+                }
+            }
+            else if (rule.dontMatch === val) {
+                throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
             }
         }
 
