@@ -22,7 +22,9 @@ Coming soon...
 ## Roadmap
 - [x] Basic authorization
 - [x] WYSIWYG editor
-- [x] Image uploading
 - [x] Swagger REST API Docs
+- [x] Image uploading
+- [ ] Stack multiple images into a gallery
+- [ ] User profile picture
 - [ ] Post comments
 - [ ] Headless admin panel
