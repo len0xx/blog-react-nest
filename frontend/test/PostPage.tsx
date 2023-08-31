@@ -5,10 +5,11 @@ import PostPage from '../components/PostPage'
 test('Post page', () => {
     const postEntity = {
         title: "Hello Vitest",
-        content: "Blah blah blah"
+        rawContent: `{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Start typing here"}]}]}`,
+        renderedContent: 'Start typing here'
     }
 
-    render(<PostPage title={ postEntity.title } content={ postEntity.content } />)
+    render(<PostPage title={ postEntity.title } content={ postEntity.rawContent } />)
 
     const post = within(screen.getByTestId('post-content'))
 
@@ -17,6 +18,6 @@ test('Post page', () => {
     ).toBeDefined()
 
     expect(
-        post.getByText(postEntity.content)
+        post.getByText(postEntity.renderedContent)
     ).toBeDefined()
 })
