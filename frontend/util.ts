@@ -120,6 +120,18 @@ export const includesAny = (input: string, arr: string[]) => {
     return flag
 }
 
+export const isAlphaNum = (input: string) => {
+    const alpha = (`qwertyuiopasdfghjklzxcvbnm` + `QWERTYUIOPASDFGHJKLZXCVBNM`).split('')
+    const num = '0123456789'.split('')
+
+    for (const char of input.split('')) {
+        if (!alpha.includes(char) && !num.includes(char)) {
+            return false
+        }
+    }
+    return true
+}
+
 export const validateSchema = <T>(schema: ValidationSchema, data: Record<string, T>): boolean => {
     for (const key in schema) {
         const rule = schema[key]
@@ -264,11 +276,8 @@ export const validateSchema = <T>(schema: ValidationSchema, data: Record<string,
         }
 
         if (rule.alphaNum && val && typeof val === 'string') {
-            const alpha = (`qwertyuiopasdfghjklzxcvbnm` + `QWERTYUIOPASDFGHJKLZXCVBNM`).split('')
-            const num = '0123456789'.split('')
-
-            if (!(includesAny(val, alpha) && includesAny(val, num))) {
-                throw new ValidationError(err || `Field ${ key } is expected to contain at least 1 numeric character and 1 latin letter`)
+            if (!isAlphaNum(val)) {
+                throw new ValidationError(err || `Field ${ key } is expected to only contain alpha-numeric characters`)
             }
         }
     }
