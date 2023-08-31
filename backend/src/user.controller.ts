@@ -5,7 +5,7 @@ import * as jwt from 'jsonwebtoken'
 import { Authorization } from "./auth.utilities"
 import { User } from "@prisma/client"
 import { ApiBadRequestResponse, ApiCreatedResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from "@nestjs/swagger"
-import { AuthUserDto, CreateUserDto, UpdateUserDto } from "./user.dto"
+import { AuthUserDto, CreateUserDto, UpdatePasswordDto, UpdateUserDto } from "./user.dto"
 
 const NEST_ACCESS_TOKEN = process.env.NEST_ACCESS_TOKEN as string
 const NEST_AUTH_SECRET = process.env.AUTH_SECRET as string
@@ -85,7 +85,7 @@ export class UserController {
         return JSON.stringify(payload)
     }
 
-    @Patch('update')
+    @Patch('')
     @ApiTags('user')
     @Header('Content-Type', 'application/json')
     @ApiOkResponse({ description: 'User has been updated' })
@@ -114,6 +114,43 @@ export class UserController {
         catch (e) {
             console.error(e)
             throw new BadRequestException('Could not update a user')
+        }
+    }
+
+    @Patch('password')
+    @ApiTags('user')
+    @Header('Content-Type', 'application/json')
+    @ApiOkResponse({ description: 'Password has been changed' })
+    @ApiBadRequestResponse({ description: 'Missing data ("password", "newPassword" and "newPasswordRep")' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
+    async updatePassword(@Body() data: UpdatePasswordDto, @Authorization({ sanitize: false }) user: ExtendedUser): Promise<string> {
+        if (!data.password && !data.newPassword && !data.newPasswordRep) {
+            throw new BadRequestException('Please fill in all the required fields')
+        }
+
+        if (!user) {
+            throw new UnauthorizedException('You must authorize first to access this resource')
+        }
+
+        const userId = user.id
+
+        const check = await compare(data.password, user.password)
+        if (!check) throw new BadRequestException('Incorrect password. Please try again')
+
+        const match = data.newPassword === data.newPasswordRep
+        if (!match) throw new BadRequestException('The new passwords do not match. Please try again')
+
+        const updated = {
+            password: await hash(data.password, 14)
+        }
+
+        try {
+            await this.userService.updateById(userId, updated)
+            return JSON.stringify({ updated: true })
+        }
+        catch (e) {
+            console.error(e)
+            throw new BadRequestException('Could not change the password')
         }
     }
 

@@ -23,7 +23,7 @@ export async function decodeToken(token: string): Promise<FullUser | null> {
 
 export const Authorization = createParamDecorator(
     async (
-        _data: unknown,
+        { sanitize }: { sanitize: boolean } = { sanitize: true },
         ctx: ExecutionContext
     ): Promise<ExtendedUser | null> => {
         const request = ctx.switchToHttp().getRequest() as IncomingMessage
@@ -31,7 +31,7 @@ export const Authorization = createParamDecorator(
 
         try {
             const user = await decodeToken(accessToken)
-            delete user.password
+            if (sanitize) delete user.password
             return user
         } catch (e) {
             return null

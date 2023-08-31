@@ -50,6 +50,15 @@ export class UpdateUserDto {
     about?: string
 }
 
+export class UpdatePasswordDto {
+    @ApiProperty()
+    password: string
+    @ApiProperty()
+    newPassword: string
+    @ApiProperty()
+    newPasswordRep: string
+}
+
 export class AuthUserDto {
     @ApiProperty()
     email: string
