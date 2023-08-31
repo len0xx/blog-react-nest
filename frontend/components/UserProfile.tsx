@@ -69,7 +69,8 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
         },
         newPasswordRep: {
             required: true,
-            match: newPassword
+            match: newPassword,
+            errorText: 'The passwords you entered do not match'
         }
     }
 
