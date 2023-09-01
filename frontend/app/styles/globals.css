@@ -243,8 +243,18 @@ footer {
     gap: 1em;
     width: 100%;
     padding: 2em 0;
+    margin-top: 2em;
 }
 
 footer > div {
     text-align: center;
+}
+
+footer > div.source-code-note {
+    opacity: 0.6;
+    transition: 0.1s ease-in-out;
+}
+
+footer > div.source-code-note:hover {
+    opacity: 1;
 }

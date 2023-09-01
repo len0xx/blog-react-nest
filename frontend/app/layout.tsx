@@ -47,7 +47,7 @@ export default async function RootLayout({
                     </main>
                     <footer>
                         <div><b>Blog</b> © { new Date().getFullYear() === 2023 ? 2023 : `2023 - ${ new Date().getFullYear() }` }</div>
-                        <div>Source code is available on <a href="https://github.com/len0xx/blog-react-nest">GitHub</a></div>
+                        <div className="source-code-note">Source code is available on <a href="https://github.com/len0xx/blog-react-nest" target="_BLANK">GitHub</a></div>
                     </footer>
                 </NextAuthProvider>
             </body>
