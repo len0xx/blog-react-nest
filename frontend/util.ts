@@ -38,7 +38,10 @@ export interface APIOptions<PayloadType = any> {
     headers?: Headers | [string, string][]
 }
 
-export const extractHeader = (headers: Headers | [string, string][] | undefined, name: string): string | null => {
+export const extractHeader = (
+    headers: Headers | [string, string][] | undefined,
+    name: string
+): string | null => {
     if (!headers) return null
 
     if (headers instanceof Headers) {
@@ -49,7 +52,13 @@ export const extractHeader = (headers: Headers | [string, string][] | undefined,
     return filtered.length ? filtered[0][1] : null
 }
 
-export const callAPI = async <APIResponse = any, Payload = any>(path: string | URL, { method, token, payload, headers }: APIOptions<Payload>): Promise<APIResponse> => {
+export const callAPI = async <
+    APIResponse = any,
+    Payload = any
+>(
+    path: string | URL,
+    { method, token, payload, headers }: APIOptions<Payload>
+): Promise<APIResponse> => {
     let contentType = 'application/json'
     if (extractHeader(headers, 'Content-Type')) contentType = extractHeader(headers, 'Content-Type')!
 
@@ -137,7 +146,10 @@ export const isAlphaNum = (input: string) => {
     return true
 }
 
-export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record<string, ValueType>): boolean => {
+export const validateSchema = <ValueType>(
+    schema: ValidationSchema,
+    data: Record<string, ValueType>
+): boolean => {
     for (const key in schema) {
         const rule = schema[key]
         const val = data[key]
@@ -251,7 +263,9 @@ export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record
                 }
 
                 if (!flag) {
-                    throw new ValidationError(err || `Field ${ key } is expected to contain at least one value from the list: ${ failure.join(', ') }, but it does not`)
+                    throw new ValidationError(
+                        err || `Field ${ key } is expected to contain at least one value from the list: ${ failure.join(', ') }, but it does not`
+                    )
                 }
             }
         }
@@ -283,7 +297,9 @@ export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record
                 }
 
                 if (!flag) {
-                    throw new ValidationError(err || `Field ${ key } is expected not to contain any value from the list: ${ failure.join(', ') }, but it does`)
+                    throw new ValidationError(
+                        err || `Field ${ key } is expected not to contain any value from the list: ${ failure.join(', ') }, but it does`
+                    )
                 }
             }
         }
