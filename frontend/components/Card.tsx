@@ -51,6 +51,7 @@ export default function CardComponent({ title, text, id, editable = false, favou
             setIsLoadingFav(true)
             const response = await callAPI<FavouriteResponse>(`/api/post/favourite/${ id }`, { method: 'POST', token, payload: {} })
             setSaved(response.state)
+
             if (response.state) toaster.success('The post has been saved to favourites')
             else toaster.success('The post has been removed from favourites')
         }
@@ -83,42 +84,41 @@ export default function CardComponent({ title, text, id, editable = false, favou
             </Dialog>
             <div className="card">
                 <div className="card-title">
-                    { title }
+                    <a href={ `/post/${ id }` }>{ title }</a>
                 </div>
                 <div className="card-content">
                     <div className="card-text">
                         <Content content={ text } />
-                    </div>	
-                    <div className='card-footer'>
-                        <a href={ `/post/${ id }` }>
-                            <Button size="small" appearance="default" marginRight={ 10 }>
-                                Open
-                            </Button>
-                        </a>
-                        { favouritable && 
-                            <Button
-                                size="small"
-                                appearance="default"
-                                marginRight={ 10 }
-                                onClick={ addToFavourites }
-                                isLoading={ isLoadingFav }
-                            >
-                                { isSaved ? 'Saved' : 'Save' }
-                            </Button>
-                        }
-                        { editable && 
-                            <Button
-                                size="small"
-                                appearance="default"
-                                intent='danger'
-                                marginRight={ 10 }
-                                onClick={ () => setShown(true) }
-                                isLoading={ isLoading }
-                            >
-                                Delete
-                            </Button>
-                        }
                     </div>
+                    { (favouritable || editable) ?
+                        <div className='card-footer'>
+                            { favouritable && 
+                                <Button
+                                    size="small"
+                                    appearance="default"
+                                    marginRight={ 10 }
+                                    onClick={ addToFavourites }
+                                    isLoading={ isLoadingFav }
+                                >
+                                    { isSaved ? 'Saved' : 'Save' }
+                                </Button>
+                            }
+                            { editable && 
+                                <Button
+                                    size="small"
+                                    appearance="default"
+                                    intent='danger'
+                                    marginRight={ 10 }
+                                    onClick={ () => setShown(true) }
+                                    isLoading={ isLoading }
+                                >
+                                    Delete
+                                </Button>
+                            }
+                        </div>
+                    :
+                        <></> 
+                    }
                 </div>
             </div>
         </>
