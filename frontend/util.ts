@@ -99,8 +99,8 @@ export interface ValidationRule<ValueType = any> {
     maxLen?: number
     minValue?: ValueType
     maxValue?: ValueType
-    match?: ValueType | ((arg?: ValueType) => ValueType)
-    dontMatch?: ValueType | ((arg?: ValueType) => ValueType)
+    match?: ValueType | (() => ValueType)
+    dontMatch?: ValueType | (() => ValueType)
     matchRegex?: RegExp
     contains?: string | (string | number)[][]
     notContains?: string | (string | number)[][]
@@ -132,18 +132,6 @@ export const includesAny = (input: string, arr: string[]) => {
         }
     }
     return flag
-}
-
-export const isAlphaNum = (input: string) => {
-    const alpha = (`qwertyuiopasdfghjklzxcvbnm` + `QWERTYUIOPASDFGHJKLZXCVBNM`).split('')
-    const num = '0123456789'.split('')
-
-    for (const char of input.split('')) {
-        if (!alpha.includes(char) && !num.includes(char)) {
-            return false
-        }
-    }
-    return true
 }
 
 export const validateSchema = <ValueType>(
@@ -212,7 +200,7 @@ export const validateSchema = <ValueType>(
 
         if (rule.match) {
             if (typeof rule.match === 'function') {
-                if (rule.match(val) !== val) {
+                if (rule.match() !== val) {
                     throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
                 }
             }
@@ -223,7 +211,7 @@ export const validateSchema = <ValueType>(
 
         if (rule.dontMatch) {
             if (typeof rule.dontMatch === 'function') {
-                if (rule.dontMatch(val) === val) {
+                if (rule.dontMatch() === val) {
                     throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
                 }
             }
@@ -319,7 +307,7 @@ export const validateSchema = <ValueType>(
         }
 
         if (rule.alphaNum && val && typeof val === 'string') {
-            if (!isAlphaNum(val)) {
+            if (!/^[a-zA-Z0-9]*$/.test(val)) {
                 throw new ValidationError(err || `Field ${ key } is expected to only contain alpha-numeric characters`)
             }
         }
