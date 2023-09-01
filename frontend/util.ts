@@ -31,10 +31,10 @@ export interface User {
 
 export type Author = User
 
-export interface APIOptions<T = any> {
+export interface APIOptions<PayloadType = any> {
     method: HTTP_METHOD
     token?: string
-    payload?: T
+    payload?: PayloadType
     headers?: Headers | [string, string][]
 }
 
@@ -82,27 +82,27 @@ export const callAPI = async <APIResponse = any, Payload = any>(path: string | U
 export type AllowedTypes = 'string' | 'number' | 'array' | 'object' | 'boolean' | 'bigint' | 'undefined' | 'symbol'
 export const allowedTypes: AllowedTypes[] = [ 'string', 'number', 'boolean', 'bigint', 'undefined', 'object' ]
 
-export interface ValidationRule<T = any> {
+export interface ValidationRule<ValueType = any> {
     type?: AllowedTypes
     required?: boolean
     isNumeric?: boolean
     minLen?: number
     maxLen?: number
-    minValue?: T
-    maxValue?: T
-    match?: T | (() => T)
-    dontMatch?: T | (() => T)
+    minValue?: ValueType
+    maxValue?: ValueType
+    match?: ValueType | (() => ValueType)
+    dontMatch?: ValueType | (() => ValueType)
     matchRegex?: RegExp
     contains?: string | (string | number)[][]
     notContains?: string | (string | number)[][]
-    isIn?: T[]
-    notIn?: T[]
-    customValidation?: (input: T) => boolean
+    isIn?: ValueType[]
+    notIn?: ValueType[]
+    customValidation?: (input: ValueType) => boolean
     errorText?: string
     alphaNum?: boolean
 }
 
-export type ValidationSchema = Record<string, ValidationRule>
+export type ValidationSchema<ValueType = any> = Record<string, ValidationRule<ValueType>>
 
 export class ValidationError extends Error {
     constructor(message: string) {
@@ -137,7 +137,7 @@ export const isAlphaNum = (input: string) => {
     return true
 }
 
-export const validateSchema = <T>(schema: ValidationSchema, data: Record<string, T>): boolean => {
+export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record<string, ValueType>): boolean => {
     for (const key in schema) {
         const rule = schema[key]
         const val = data[key]
