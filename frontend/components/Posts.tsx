@@ -74,6 +74,7 @@ export default ({ posts, pages, token, onUpdate, editable = false, favouritable 
                         id={ post.id }
                         title={ post.title }
                         text={ post.content }
+                        createdAt={ post.createdAt }
                         editable={ editable }
                         favouritable={ favouritable }
                         saved={ post.saved }

@@ -6,11 +6,13 @@ import '@/app/styles/card.css'
 import { useEffect, useState } from 'react'
 import { callAPI } from '@/util'
 import { toaster } from 'evergreen-ui'
+import dayjs from 'dayjs'
 
 interface Props {
     title: string
     text: string
     id: number
+    createdAt: Date
     saved?: boolean
     token?: string
     favouritable?: boolean
@@ -24,7 +26,17 @@ interface FavouriteResponse {
     state: boolean
 }
 
-export default function CardComponent({ title, text, id, editable = false, favouritable = false, token, onDelete, saved }: Props) {
+export default function CardComponent({
+    title,
+    text,
+    id,
+    createdAt,
+    editable = false,
+    favouritable = false,
+    token,
+    onDelete,
+    saved
+}: Props) {
     const [ isLoading, setIsLoading ] = useState(false)
     const [ isLoadingFav, setIsLoadingFav ] = useState(false)
     const [ isDialogShown, setShown ] = useState(false)
@@ -89,6 +101,9 @@ export default function CardComponent({ title, text, id, editable = false, favou
                 <div className="card-content">
                     <div className="card-text">
                         <Content content={ text } />
+                    </div>
+                    <div className="card-date">
+                        Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') }
                     </div>
                     { (favouritable || editable) ?
                         <div className='card-footer'>
