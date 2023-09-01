@@ -200,7 +200,7 @@ export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record
 
         if (rule.match) {
             if (typeof rule.match === 'function') {
-                if (rule.match() !== val) {
+                if (rule.match(val) !== val) {
                     throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
                 }
             }
@@ -211,7 +211,7 @@ export const validateSchema = <ValueType>(schema: ValidationSchema, data: Record
 
         if (rule.dontMatch) {
             if (typeof rule.dontMatch === 'function') {
-                if (rule.dontMatch() === val) {
+                if (rule.dontMatch(val) === val) {
                     throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
                 }
             }
