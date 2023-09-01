@@ -90,8 +90,8 @@ export interface ValidationRule<ValueType = any> {
     maxLen?: number
     minValue?: ValueType
     maxValue?: ValueType
-    match?: ValueType | (() => ValueType)
-    dontMatch?: ValueType | (() => ValueType)
+    match?: ValueType | ((arg?: ValueType) => ValueType)
+    dontMatch?: ValueType | ((arg?: ValueType) => ValueType)
     matchRegex?: RegExp
     contains?: string | (string | number)[][]
     notContains?: string | (string | number)[][]
