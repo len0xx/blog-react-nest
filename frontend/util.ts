@@ -99,11 +99,10 @@ export interface ValidationRule<ValueType = any> {
     maxLen?: number
     minValue?: ValueType
     maxValue?: ValueType
-    match?: ValueType | (() => ValueType)
-    dontMatch?: ValueType | (() => ValueType)
-    matchRegex?: RegExp
-    contains?: string | (string | number)[][]
-    notContains?: string | (string | number)[][]
+    match?: ValueType | (() => ValueType) | RegExp
+    dontMatch?: ValueType | (() => ValueType) | RegExp
+    contains?: string | number | (string | number)[][]
+    notContains?: string | number | (string | number)[][]
     isIn?: ValueType[]
     notIn?: ValueType[]
     customValidation?: (input: ValueType) => boolean
@@ -143,6 +142,7 @@ export const validateSchema = <ValueType>(
         const val = data[key]
         const err = rule.errorText
 
+        // The type of value must match the passed type
         if (rule.type) {
             if (allowedTypes.includes(rule.type)) {
                 if (typeof val !== rule.type) {
@@ -154,28 +154,33 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // The value must be present in data variable and must not be nullish (false is an exception since it is a value of type boolean, not nullish)
         if (rule.required && !(typeof val === 'boolean' && val === false) && !val) {
             throw new ValidationError(err || `Field ${ key } is required by the provided schema, but value is "${ val }"`)
         }
 
+        // The value must be either a numeric string or a number itself
         if (rule.isNumeric) {
             if (isNaN(+(val as number))) {
                 throw new ValidationError(err || `Field ${ key } is expected to be numeric, but it's value is "${ val }"`)
             }
         }
 
+        // The value must be greater than or equal to a passed parameter
         if (rule.minValue || typeof rule.minValue === 'number' && rule.minValue === 0) {
             if (val as number < rule.minValue) {
                 throw new ValidationError(err || `Field ${ key } is expected to be greater than ${ rule.minValue }, but it's value is "${ val }"`)
             }
         }
 
+        // The value must be less than or equal to a passed parameter
         if (rule.maxValue || typeof rule.maxValue === 'number' && rule.maxValue === 0) {
             if (val as number > rule.maxValue) {
                 throw new ValidationError(err || `Field ${ key } is expected to be less than ${ rule.maxValue }, but it's value is "${ val }"`)
             }
         }
 
+        // The value's length property must be greater than or equal to a passed parameter
         if (rule.minLen || rule.minLen === 0) {
             if (typeof (val as ObjectHasLength).length !== 'number') {
                 throw new ValidationError(err || `Field ${ key } is expected to have at least ${ rule.minLen } elements in it, but it has no 'length' property`)
@@ -187,6 +192,7 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // The value's length property must be less than or equal to a passed parameter
         if (rule.maxLen || rule.maxLen === 0) {
             if (typeof (val as ObjectHasLength).length !== 'number') {
                 throw new ValidationError(err || `Field ${ key } is expected to have ${ rule.maxLen } elements at most in it, but it has no 'length' property`)
@@ -198,9 +204,15 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // The value must match a passed parameter
         if (rule.match) {
             if (typeof rule.match === 'function') {
                 if (rule.match() !== val) {
+                    throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
+                }
+            }
+            else if (rule.match instanceof RegExp) {
+                if (!rule.match.test((val as Object).toString())) {
                     throw new ValidationError(err || `Field ${ key } did not match ${ rule.match }`)
                 }
             }
@@ -209,9 +221,15 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // The value must be anything other than a passed parameter
         if (rule.dontMatch) {
             if (typeof rule.dontMatch === 'function') {
                 if (rule.dontMatch() === val) {
+                    throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
+                }
+            }
+            else if (rule.dontMatch instanceof RegExp) {
+                if (rule.dontMatch.test((val as Object).toString())) {
                     throw new ValidationError(err || `Field ${ key } should not match ${ rule.dontMatch }`)
                 }
             }
@@ -220,13 +238,11 @@ export const validateSchema = <ValueType>(
             }
         }
 
-        if (rule.matchRegex && !rule.matchRegex.test(val as string)) {
-            throw new ValidationError(err || `Field ${ key } is expected to match the certain Regular Expression, but it does not`)
-        }
-
+        // contains: string | number => The value must contain a passed parameter
+        // contains: (string | number)[][] => The value must contain at least one element from each array passed as a parameter
         if (rule.contains && val && (typeof val === 'string' || Array.isArray(val))) {
-            if (typeof rule.contains === 'string') {
-                if (!(typeof val === 'string' && val.includes(rule.contains))) {
+            if (typeof rule.contains === 'string' || typeof rule.contains === 'number') {
+                if (!(typeof val === 'string' && val.includes(rule.contains.toString()))) {
                     throw new ValidationError(err || `Field ${ key } is expected to contain ${ rule.contains }, but it does not`)
                 }
             }
@@ -236,7 +252,7 @@ export const validateSchema = <ValueType>(
 
                 for (const collection of rule.contains) {
                     let localFlag = false
-                    for (const item of collection) {
+                    for (const item of collection.filter((v) => !!v)) {
                         if (val.includes(item.toString())) {
                             localFlag = true
                             break
@@ -258,9 +274,11 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // contains: string | number => The value should not contain a passed parameter
+        // contains: (string | number)[][] => The value should not contain any element from each array passed as a parameter
         if (rule.notContains && val && (typeof val === 'string' || Array.isArray(val))) {
-            if (typeof rule.notContains === 'string') {
-                if (typeof val === 'string' && val.includes(rule.notContains)) {
+            if (typeof rule.notContains === 'string' || typeof rule.notContains === 'number') {
+                if (typeof val === 'string' && val.includes(rule.notContains.toString())) {
                     throw new ValidationError(err || `Field ${ key } is expected not to contain ${ rule.notContains }, but it does`)
                 }
             }
@@ -270,7 +288,7 @@ export const validateSchema = <ValueType>(
 
                 for (const collection of rule.notContains) {
                     let localFlag = false
-                    for (const item of collection) {
+                    for (const item of collection.filter((v) => !!v)) {
                         if (!val.includes(item.toString())) {
                             localFlag = true
                             break
@@ -292,20 +310,24 @@ export const validateSchema = <ValueType>(
             }
         }
 
+        // The value must be present in a passed parameter
         if (rule.isIn && val && !rule.isIn.includes(val)) {
             throw new ValidationError(err || `Field ${ key } does not match the permitted range of values`)
         }
 
+        // The value must be absent in a passed parameter
         if (rule.notIn && val && rule.notIn.includes(val)) {
             throw new ValidationError(err || `Field ${ key } does not match the permitted range of values`)
         }
 
+        // The custom function must return true
         if (rule.customValidation) {
             if (!rule.customValidation(val)) {
                 throw new ValidationError(err || `Field ${ key } failed on custom validation`)
             }
         }
 
+        // The value must only contain alpha-numeric characters
         if (rule.alphaNum && val && typeof val === 'string') {
             if (!/^[a-zA-Z0-9]*$/.test(val)) {
                 throw new ValidationError(err || `Field ${ key } is expected to only contain alpha-numeric characters`)
