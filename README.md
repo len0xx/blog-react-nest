@@ -13,11 +13,35 @@ Minimalistic but fully functional blog application
 - Docker
 
 ### Overall structure
+
 <img width="1637" alt="image" src="https://github.com/len0xx/blog-react-nest/assets/21990466/c548712d-573b-422a-8139-e67fd31b8c32">
+
+
+### Screenshot
+
+![image](https://github.com/len0xx/blog-react-nest/assets/21990466/260c9d79-5976-40cc-b04b-983d54a26e37)
+
 
 ## Getting started
 
-Coming soon...
+To launch this project you need to have Docker and Docker Compose installed on your machine: [Get it here](https://docs.docker.com/get-docker/)
+
+> **Note**: Currently this project uses `http://blog.local` as an entrypoint to an application by default.
+> 
+> To make it work on your machine locally you have to add the following line: `127.0.0.1 blog.local` to the hosts file on your system. On Linux/MacOS this file is located at `/etc/hosts`. On Windows it is usually `C:\Windows\System32\drivers\etc\hosts`
+> 
+> Or you can just change `blog.local` to `localhost` in `frontend/Dockerfile`. This way you won't have to configure anything else, just access the application at `http://localhost:80`
+
+After you got Docker Compose installed, run this command:
+```bash
+# *nix system
+docker compose up
+
+# Windows system
+docker-compose up
+```
+
+Then open your browser and go to the address, the application is running on. (Read note above for details)
 
 ## Roadmap
 - [x] Basic authorization
