@@ -9,6 +9,8 @@ export default class PostDto {
     published: boolean
     @ApiProperty()
     authorId: number
+    @ApiProperty()
+    archive?: boolean
 }
 
 export class CreatePostDto {

@@ -36,7 +36,7 @@ export class PostController {
     async getPosts(@Query('author') author: string, @Query('page') currentPage: string): Promise<string> {
         const page = currentPage && !isNaN(+currentPage) ? +currentPage : 1
         const offset = (page - 1) * POSTS_AMOUNT
-        const where: Prisma.PostWhereInput = !isNaN(+author) ? { authorId: +author } : {}
+        const where: Prisma.PostWhereInput = !isNaN(+author) ? { authorId: +author, published: true, archive: false } : { published: true, archive: false }
         const posts = await this.postService.getAll({ where, orderBy: [ { id: 'desc' } ], skip: offset, take: POSTS_AMOUNT })
         const amount = await this.postService.count({ where })
         const pages = Math.ceil(amount / POSTS_AMOUNT)
@@ -91,7 +91,7 @@ export class PostController {
     async getPost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (id) {
             const post = await this.postService.get({ id })
-            if (!post) throw new NotFoundException(`Post with id ${id} not found`)
+            if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${id} not found`)
             return JSON.stringify(post)
         }
 
@@ -113,7 +113,7 @@ export class PostController {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
 
         const post = await this.postService.get({ id })
-        if (!post) throw new NotFoundException(`Post with id ${id} does not exist`)
+        if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${id} does not exist`)
 
         try {
             const post = await this.postService.updateById(id, data)
@@ -135,9 +135,9 @@ export class PostController {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
 
         const post = await this.postService.get({ id })
-        if (!post) throw new NotFoundException(`Post with id ${id} does not exist`)
+        if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${id} does not exist`)
 
-        const result = await this.postService.delete({ id })
+        const result = await this.postService.updateById(id, { archive: true })
         if (result) return JSON.stringify({ ok: true })
 
         throw new BadRequestException('Could not delete a post')

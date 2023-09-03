@@ -39,7 +39,7 @@ export class PostService {
         return await this.prisma.post.update({ where, data })
     }
 
-    async updateById(id: number, data: PostDto): Promise<Post | null> {
+    async updateById(id: number, data: Partial<PostDto>): Promise<Post | null> {
         return await this.prisma.post.update({ where: { id }, data })
     }
 
@@ -56,7 +56,7 @@ export class PostService {
     async toggleFavourite(id: number, userId: number): Promise<boolean> {
         const post = await this.get({ id })
         const user = await this.prisma.user.findUnique({ where: { id: userId } })
-        if (!post || !user) throw new NotFoundException(`Either post or user with specified id is not found. [ postId: ${ id }, userId: ${ userId } ]`)
+        if (!post || !post.published || post.archive || !user) throw new NotFoundException(`Either post or user with specified id is not found. [ postId: ${ id }, userId: ${ userId } ]`)
 
         try {
             const data = { userId: user.id, postId: post.id }

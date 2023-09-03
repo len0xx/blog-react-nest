@@ -13,6 +13,7 @@ model Post {
     createdAt       DateTime        @default(now()) @db.Timestamp(6)
     content         String
     published       Boolean         @default(false)
+    archive         Boolean         @default(false)
     author          User            @relation(fields: [authorId], references: [id])
     authorId        Int
     favourites      Favourites[]
