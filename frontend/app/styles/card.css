@@ -16,19 +16,24 @@ div.card {
 }
 
 div.card > div.card-title {
+    display: grid;
+    position: relative;
+    gap: 1em;
+    grid-template-columns: 1fr auto;
+    justify-content: center;
 	padding: 1em;
 	font-size: 1.25em;
 	font-weight: 600;
 	border-bottom: 1px solid var(--card-border);
 }
 
-div.card > div.card-title > a {
+div.card > div.card-title a {
 	text-decoration: none;
     transition: 0.1s ease-in-out;
     border-bottom: 2px solid transparent;
 }
 
-div.card > div.card-title > a:hover {
+div.card > div.card-title a:hover {
 	text-decoration: none;
     border-bottom: 2px solid rgb(var(--foreground-rgb));
 }
@@ -66,4 +71,23 @@ div.card > div.card-content > div.card-text ul {
 		--card-color: #FFF;
 		--card-color-secondary: #EEE;
 	}
+}
+
+.breadcrumbs {
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.breadcrumbs > .brcr {
+    display: inline-block;
+    position: relative;
+    border-radius: 50%;
+    width: 5px;
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.2);
+}
+
+.breadcrumbs > .brcr:not(:last-child) {
+    margin-right: 4px;
 }

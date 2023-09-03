@@ -10,6 +10,8 @@
         )
         rgb(var(--background-start-rgb)
     );
+    --background-secondary: rgb(225, 225, 225);
+    --dark-grey: rgb(210, 210, 210);
 
     --card-rgb: 180, 185, 188;
     --card-border-rgb: 131, 134, 135;
@@ -47,7 +49,10 @@
     :root {
         --foreground-rgb: 255, 255, 255;
         --background-start-rgb: 14, 14, 14;
+        --background-end-rgb: 30, 30, 30;
         --background: rgb(var(--background-start-rgb));
+        --background-secondary: rgb(var(--background-end-rgb));
+        --dark-grey: rgb(56, 56, 56);
 
         --card-rgb: 100, 100, 100;
         --card-border-rgb: 200, 200, 200;
@@ -258,3 +263,43 @@ footer > div.source-code-note {
 footer > div.source-code-note:hover {
     opacity: 1;
 }
+
+.menu-wrapper {
+    border-radius: 4px;
+    border: 1px solid var(--dark-grey);
+    background-color: var(--background);
+}
+
+.menu-wrapper .ub-b-btm_1px-solid-E6E8F0.ub-box-szg_border-box {
+    border-bottom-color: var(--dark-grey);
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) {
+    background-color: var(--background);
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) > span {
+    color: rgb(var(--foreground-rgb));
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover {
+    background-color: var(--background-secondary);
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span {
+    color: rgb(var(--foreground-rgb));
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus {
+    background-color: var(--background-secondary);
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span {
+    color: rgb(var(--foreground-rgb));
+}
+
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) > span.ub-color_D14343,
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span.ub-color_D14343,
+.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span.ub-color_D14343 {
+    color: rgb(219, 87, 87);
+} 

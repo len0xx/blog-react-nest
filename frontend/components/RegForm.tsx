@@ -28,7 +28,7 @@ export default function RegForm() {
     const schema: ValidationSchema = {
         email: {
             required: true,
-            matchRegex: emailRegex,
+            match: emailRegex,
             errorText: 'Please enter a correct email address'
         },
         firstName: {
