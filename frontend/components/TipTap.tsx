@@ -57,10 +57,11 @@ export interface UpdateDetails {
 }
 
 interface Props {
+    initialContent?: string,
     onUpdate?: (details: UpdateDetails) => void
 }
 
-const TipTap = forwardRef<Editor, Props>(({ onUpdate }: Props, ref: Ref<Editor>) => {
+const TipTap = forwardRef<Editor, Props>(({ onUpdate, initialContent }: Props, ref: Ref<Editor>) => {
     const fileInput = useRef<HTMLInputElement | null>(null)
     const [ error, setError ] = useState<boolean>(false)
     const [ errorText, setErrorText ] = useState<string | null>(null)
@@ -119,7 +120,7 @@ const TipTap = forwardRef<Editor, Props>(({ onUpdate }: Props, ref: Ref<Editor>)
                     }
                 })
         ],
-        content: '<p>Start typing here</p>'
+        content: initialContent ? JSON.parse(initialContent) : '<p>Start typing here</p>'
     })
 
     useEffect(() => {

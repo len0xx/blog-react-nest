@@ -274,32 +274,36 @@ footer > div.source-code-note:hover {
     border-bottom-color: var(--dark-grey);
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r) {
     background-color: var(--background);
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) > span {
+.menu-wrapper > nav[role="menu"] > div a {
+    text-decoration: none;
+}
+
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r) > span {
     color: rgb(var(--foreground-rgb));
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover {
     background-color: var(--background-secondary);
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span {
     color: rgb(var(--foreground-rgb));
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus {
     background-color: var(--background-secondary);
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span {
     color: rgb(var(--foreground-rgb));
 }
 
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r) > span.ub-color_D14343,
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span.ub-color_D14343,
-.menu-wrapper > nav[role="menu"] > div > div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span.ub-color_D14343 {
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r) > span.ub-color_D14343,
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):not(:focus):not(:active):hover > span.ub-color_D14343,
+.menu-wrapper > nav[role="menu"] > div div[role="menuitem"]:not(.r)[data-isselectable="true"]:not([aria-current="true"]):not([aria-checked="true"]):focus > span.ub-color_D14343 {
     color: rgb(219, 87, 87);
 } 

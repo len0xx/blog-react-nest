@@ -95,14 +95,11 @@ export default function CardComponent({
                                 content={
                                     <div className="menu-wrapper">
                                         <Menu>
-                                            { favouritable && 
-                                                <>
-                                                    <Menu.Group>
-                                                        <Menu.Item onSelect={ addToFavourites }>{ isSaved ? 'Remove from Saved' : 'Save' }</Menu.Item>
-                                                    </Menu.Group>
-                                                    <Menu.Divider />
-                                                </>
-                                            }
+                                            <Menu.Group>
+                                                { favouritable && <Menu.Item onSelect={ addToFavourites }>{ isSaved ? 'Remove from Saved' : 'Save' }</Menu.Item> }
+                                                { editable && <a href={ `/edit/${ id }` }><Menu.Item>Edit the post</Menu.Item></a> }
+                                            </Menu.Group>
+                                            <Menu.Divider />
                                             { editable &&
                                                 <Menu.Group>
                                                     <Menu.Item onSelect={() => setShown(true)} intent="danger">
