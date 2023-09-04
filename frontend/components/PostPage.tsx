@@ -17,7 +17,10 @@ export default function PostPage({ title, content, author, createdAt }: Componen
 			<h1>{ title }</h1><br />
             { author && <>
                 <p className="post-page-author">
-                    <span>Author: </span><a href={ getProfileLink(author.id) }>{ author.fullName }</a>
+                    <span>Author: </span>
+                    <a href={ getProfileLink(author.id) } title={ `Open ${ author.fullName }'s profile page` }>
+                        { author.fullName }
+                    </a>
                 </p>
                 <br />
             </> }

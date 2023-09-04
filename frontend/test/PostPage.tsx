@@ -5,11 +5,12 @@ import PostPage from '../components/PostPage'
 test('Post page', () => {
     const postEntity = {
         title: "Hello Vitest",
+        createdAt: new Date(),
         rawContent: `{"type":"doc","content":[{"type":"paragraph","content":[{"type":"text","text":"Start typing here"}]}]}`,
         renderedContent: 'Start typing here'
     }
 
-    render(<PostPage title={ postEntity.title } content={ postEntity.rawContent } />)
+    render(<PostPage title={ postEntity.title } content={ postEntity.rawContent } createdAt={ postEntity.createdAt } />)
 
     const post = within(screen.getByTestId('post-content'))
 
