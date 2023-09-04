@@ -13,6 +13,7 @@ interface Props {
     count: number
     token?: string
     editable?: boolean
+    favouritable?: boolean
     user: User
 }
 
@@ -22,7 +23,7 @@ enum AllowedModes {
     ChangePass
 }
 
-export default ({ user, posts, pages, count, editable = false, token }: Props) => {
+export default ({ user, posts, pages, count, editable = false, favouritable = false, token }: Props) => {
     const [ mode, setMode ] = useState<AllowedModes>(AllowedModes.Viewing)
     const [ localUser, setUser ] = useState<User>(user)
     const [ isLoading, setIsLoading ] = useState(false)
@@ -252,7 +253,7 @@ export default ({ user, posts, pages, count, editable = false, token }: Props) =
                                 posts={ posts }
                                 pages={ pages }
                                 editable={ editable }
-                                favouritable={ editable }
+                                favouritable={ favouritable }
                                 token={ token }
                                 onUpdate={ postsUpdated }
                             />
