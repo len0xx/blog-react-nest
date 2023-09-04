@@ -38,5 +38,8 @@ export default async ({ params }: PageOptions) => {
     }
 
 
-	return <EditForm post={ post } token={ session ? session.user.backendToken : undefined } />
+	return <EditForm
+        post={ post }
+        token={ session ? session.user.backendToken : undefined }
+    />
 }

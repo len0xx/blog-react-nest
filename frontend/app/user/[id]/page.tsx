@@ -16,7 +16,10 @@ const getData = async (id: number): Promise<User> => {
         throw new HTTPError(400, 'Invalid user id')
     }
 
-	const res = await fetch(`${ API_ENDPOINT_BACK }/api/user/${ id }`, { cache: 'no-store' })
+	const res = await fetch(
+        `${ API_ENDPOINT_BACK }/api/user/${ id }`,
+        { cache: 'no-store' }
+    )
 
     if (!res.ok) throw new HTTPError(res.status, 'Could not load the user data')
 
@@ -35,7 +38,10 @@ const getPosts = async (id: number, page: number): Promise<PostsResponse> => {
         throw new HTTPError(400, 'Invalid author id')
     }
 
-	const res = await fetch(`${ API_ENDPOINT_BACK }/api/post?author=${ id }&page=${ page }`, { cache: 'no-store' })
+	const res = await fetch(
+        `${ API_ENDPOINT_BACK }/api/post?author=${ id }&page=${ page }`,
+        { cache: 'no-store' }
+    )
 
     if (!res.ok) throw new HTTPError(res.status, 'Could not load the posts')
 
