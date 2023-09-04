@@ -5,6 +5,7 @@ import { NextAuthProvider } from "./providers"
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import LogOut from '@/components/LogOut'
+import { getProfileLink } from '@/util'
 
 const inter = Inter({ subsets: ['latin'] })
 
@@ -32,7 +33,7 @@ export default async function RootLayout({
                                 { authenticated ? 
                                     <>
                                         <a href="/new"><Button>New Post</Button></a>
-                                        <a href={ `/user/${ session.user.id }` }><Button appearance='default'>Profile</Button></a>
+                                        <a href={ getProfileLink(session.user.id) }><Button appearance='default'>Profile</Button></a>
                                         <LogOut />
                                     </>
                                     :

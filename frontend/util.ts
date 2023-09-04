@@ -336,3 +336,5 @@ export const validateSchema = <ValueType>(
     }
     return true
 }
+
+export const getProfileLink = (id: number) => `/user/${ id }`

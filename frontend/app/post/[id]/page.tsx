@@ -41,6 +41,6 @@ export default async ({ params: { id } }: PageOptions) => {
     const author = await getAuthor(post.authorId)
 
 	return (
-		<PostPage title={ post.title } content={ post.content } author={ author } />
+		<PostPage title={ post.title } content={ post.content } author={ author } createdAt={ post.createdAt } />
 	)
 }

@@ -227,7 +227,27 @@ input.post-title:focus {
     color: var(--editor-title-active);
 }
 
-.post-page-content .post-page-author {
+.post-page-content .post-page-author > span {
+    opacity: 0.75;
+}
+
+.post-page-content .post-page-author > a {
+    opacity: 0.75;
+    text-decoration: none;
+    transition: 0.1s ease-in-out;
+}
+
+.post-page-content .post-page-author > a:hover {
+    opacity: 1;
+}
+
+.post-page-content .post-page-date {
+    font-size: 0.85em;
+    opacity: 0.5;
+    transition: 0.1s ease-in-out;
+}
+
+.post-page-content .post-page-date:hover {
     opacity: 0.75;
 }
 
