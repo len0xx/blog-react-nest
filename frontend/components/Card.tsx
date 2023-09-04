@@ -48,7 +48,10 @@ export default function CardComponent({
         }
         catch (e) {
             console.error(`The post with id ${ id } was not deleted`)
-            toaster.danger('The post was not deleted due to an unexpected error', { description: 'Please try again later' })
+            toaster.danger(
+                'The post was not deleted due to an unexpected error',
+                { description: 'Please try again later' }
+            )
         }
         finally {
         }
@@ -56,7 +59,10 @@ export default function CardComponent({
 
     const addToFavourites = async () => {
         try {
-            const response = await callAPI<FavouriteResponse>(`/api/post/favourite/${ id }`, { method: 'POST', token, payload: {} })
+            const response = await callAPI<FavouriteResponse>(
+                `/api/post/favourite/${ id }`,
+                { method: 'POST', token, payload: {} }
+            )
             setSaved(response.state)
 
             if (response.state) toaster.success('The post has been saved to favourites')
@@ -64,7 +70,10 @@ export default function CardComponent({
         }
         catch (e) {
             console.error(`The post with id ${ id } was not saved to favourites`)
-            toaster.danger('The post was not saved to favourites due to an unexpected error', { description: 'Please try again later' })
+            toaster.danger(
+                'The post was not saved to favourites due to an unexpected error',
+                { description: 'Please try again later' }
+            )
         }
         finally { }
     }

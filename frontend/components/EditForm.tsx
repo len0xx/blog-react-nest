@@ -46,7 +46,10 @@ export default function EditForm({ post, token }: Props) {
 
     const trySubmit = () => {
         if (disabled) {
-            toaster.danger('You can not save this post', { description: 'Because either "Title" or "Content" field is empty' })
+            toaster.danger(
+                'You can not save this post',
+                { description: 'Because either "Title" or "Content" field is empty' }
+            )
         }
     }
 

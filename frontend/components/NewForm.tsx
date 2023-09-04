@@ -44,7 +44,10 @@ export default function NewForm({ token }: Props) {
 
     const trySubmit = () => {
         if (disabled) {
-            toaster.danger('You can not publish this post', { description: 'Because either "Title" or "Content" field is empty' })
+            toaster.danger(
+                'You can not publish this post',
+                { description: 'Because either "Title" or "Content" field is empty' }
+            )
         }
     }
 
@@ -68,11 +71,11 @@ export default function NewForm({ token }: Props) {
                 onSuccess={ () => { setTimeout(() => window.location.href = '/', 1000) } }
                 ref={ formRef }
             >
-                <input className='post-title' name="title" placeholder='Create a new post' ref={ titleInput } onChange={ inputUpdated } />
+                <input className="post-title" name="title" placeholder="Create a new post" ref={ titleInput } onChange={ inputUpdated } />
                 <TipTap onUpdate={ inputUpdated } ref={ editor } />
             </Form>
             <br />
-            <span onClick={ trySubmit }>
+            <span style={{ display: 'inline-block' }} onClick={ trySubmit }>
                 <Button
                     type="button"
                     appearance="primary"
