@@ -145,11 +145,6 @@ const TipTap = forwardRef<Editor, Props>(({ onUpdate, initialContent }: Props, r
         editor!.chain().focus().extendMarkRange('link').setLink({ href: linkUrl }).run()
     }
 
-    const closeDialog = () => {
-        setIsDialogShown(false)
-        setLink()
-    }
-
     const addImage = () => {
         fileInput.current!.removeAttribute('disabled')
         fileInput.current!.click()
@@ -197,7 +192,8 @@ const TipTap = forwardRef<Editor, Props>(({ onUpdate, initialContent }: Props, r
             <Dialog
                 isShown={ isDialogShown }
                 title="Set link URL"
-                onCloseComplete={ closeDialog }
+                onCloseComplete={ () => setIsDialogShown(false) }
+                onConfirm={ setLink }
                 confirmLabel="Confirm"
                 minHeightContent={ 0 }
             >
