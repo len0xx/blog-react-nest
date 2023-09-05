@@ -22,6 +22,7 @@ import { AuthGuard } from './auth.guard'
 import { Authorization } from './auth.utilities'
 import { Prisma, User } from '@prisma/client'
 import { ExtendedUser } from './user.service'
+import { UserRoleEnum } from './user.dto'
 
 const POSTS_AMOUNT = 20
 
@@ -44,7 +45,7 @@ export class PostController {
     }
 
     @Post()
-    @UseGuards(AuthGuard)
+    @UseGuards(new AuthGuard([ UserRoleEnum.ADMIN ]))
     @HttpCode(HttpStatus.CREATED)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
@@ -99,7 +100,7 @@ export class PostController {
     }
 
     @Patch(':id')
-    @UseGuards(AuthGuard)
+    @UseGuards(new AuthGuard([ UserRoleEnum.ADMIN ]))
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Post updated successfully' })
@@ -111,6 +112,11 @@ export class PostController {
         @Body() data: PostDto,
     ): Promise<string> {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
+        if (!data.title || !data.content) {
+            throw new BadRequestException(
+                'Fields "title", "content" & "published" are required'
+            )
+        }
 
         const post = await this.postService.get({ id })
         if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${id} does not exist`)
@@ -125,7 +131,7 @@ export class PostController {
     }
 
     @Delete(':id')
-    @UseGuards(AuthGuard)
+    @UseGuards(new AuthGuard([ UserRoleEnum.ADMIN ]))
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'New post created successfully' })
@@ -144,6 +150,7 @@ export class PostController {
     }
 
     @Get('favourites')
+    @UseGuards(new AuthGuard())
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Read the list of posts added to favourite for authorized user' })
@@ -164,6 +171,7 @@ export class PostController {
     }
 
     @Post('favourite/:id')
+    @UseGuards(new AuthGuard())
     @HttpCode(HttpStatus.OK)
     @Header('Content-Type', 'application/json')
     @ApiTags('blog')
@@ -172,6 +180,7 @@ export class PostController {
     @ApiBadRequestResponse({ description: 'Missing required param ("id") or it is invalid' })
     async toggleFavourites(@Param('id', ParseIntPipe) id: number, @Authorization() user: ExtendedUser): Promise<string> {
         try {
+            console.log(id, user.id)
             const state = await this.postService.toggleFavourite(id, user.id)
             return JSON.stringify({ ok: true, state })
         } catch (e) {
