@@ -71,11 +71,7 @@ export default ({ posts, pages, token, onUpdate, userId, options = false }: Prop
             <div className="posts">
                 { localPosts.map(post =>
                     <Card
-                        id={ post.id }
-                        title={ post.title }
-                        text={ post.content }
-                        createdAt={ post.createdAt }
-                        slug={ post.slug }
+                        post={ post }
                         options={ options }
                         editable={ post.authorId === userId }
                         favouritable={ !!userId }

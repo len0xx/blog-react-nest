@@ -4,16 +4,12 @@ import { Dialog, Menu, Popover, Position } from 'evergreen-ui'
 import Content from './Content'
 import '@/app/styles/card.css'
 import { useEffect, useState } from 'react'
-import { callAPI } from '@/util'
+import { Post, callAPI } from '@/util'
 import { toaster } from 'evergreen-ui'
 import dayjs from 'dayjs'
 
 interface Props {
-    title: string
-    text: string
-    id: number
-    createdAt: Date
-    slug?: string
+    post: Post
     saved?: boolean
     token?: string
     favouritable?: boolean
@@ -29,11 +25,7 @@ interface FavouriteResponse {
 }
 
 export default function CardComponent({
-    title,
-    text,
-    id,
-    createdAt,
-    slug,
+    post,
     editable = false,
     favouritable = false,
     options = false,
@@ -46,12 +38,12 @@ export default function CardComponent({
 
     const confirmDeletion = async () => {
         try {
-            await callAPI(`/api/post/${ id }`, { method: 'DELETE', token })
-            if (onDelete) onDelete(id)
+            await callAPI(`/api/post/${ post.id }`, { method: 'DELETE', token })
+            if (onDelete) onDelete(post.id)
             toaster.success('The post has successfully been deleted')
         }
         catch (e) {
-            console.error(`The post with id ${ id } was not deleted`)
+            console.error(`The post with id ${ post.id } was not deleted`)
             toaster.danger(
                 'The post was not deleted due to an unexpected error',
                 { description: 'Please try again later' }
@@ -64,7 +56,7 @@ export default function CardComponent({
     const addToFavourites = async () => {
         try {
             const response = await callAPI<FavouriteResponse>(
-                `/api/post/favourite/${ id }`,
+                `/api/post/favourite/${ post.id }`,
                 { method: 'POST', token, payload: {} }
             )
             setSaved(response.state)
@@ -73,7 +65,7 @@ export default function CardComponent({
             else toaster.success('The post has been removed from favourites')
         }
         catch (e) {
-            console.error(`The post with id ${ id } was not saved to favourites`)
+            console.error(`The post with id ${ post.id } was not saved to favourites`)
             toaster.danger(
                 'The post was not saved to favourites due to an unexpected error',
                 { description: 'Please try again later' }
@@ -99,7 +91,7 @@ export default function CardComponent({
             <div className="card">
                 <div className="card-title">
                     <div>
-                        <a href={ slug ? `/${ slug }` : `/post/${ id }` }>{ title }</a>
+                        <a href={ post.slug ? `/${ post.slug }` : `/post/${ post.id }` }>{ post.title }</a>
                     </div>
                     <div>
                         { options &&
@@ -110,7 +102,7 @@ export default function CardComponent({
                                         <Menu>
                                             <Menu.Group>
                                                 { favouritable && <Menu.Item onSelect={ addToFavourites }>{ isSaved ? 'Remove from Saved' : 'Save' }</Menu.Item> }
-                                                { editable && <a href={ `/edit/${ id }` }><Menu.Item>Edit the post</Menu.Item></a> }
+                                                { editable && <a href={ `/edit/${ post.id }` }><Menu.Item>Edit the post</Menu.Item></a> }
                                             </Menu.Group>
                                             <Menu.Divider />
                                             { editable &&
@@ -135,10 +127,10 @@ export default function CardComponent({
                 </div>
                 <div className="card-content">
                     <div className="card-text">
-                        <Content content={ text } />
+                        <Content content={ post.content } />
                     </div>
                     <div className="card-date">
-                        Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') } (GMT+5)
+                        Published at { dayjs(post.createdAt).format('DD.MM.YYYY, HH:mm') } (GMT+5)
                     </div>
                 </div>
             </div>
