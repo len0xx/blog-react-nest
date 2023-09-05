@@ -11,6 +11,8 @@ export default class PostDto {
     authorId: number
     @ApiProperty()
     archive?: boolean
+    @ApiProperty()
+    slug?: string
 }
 
 export class CreatePostDto {

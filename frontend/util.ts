@@ -18,6 +18,7 @@ export interface Post {
     published: boolean
     createdAt: Date
     saved?: boolean
+    slug?: string
 }
 
 export interface User {

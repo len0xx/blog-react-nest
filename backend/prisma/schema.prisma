@@ -14,6 +14,7 @@ model Post {
     content         String
     published       Boolean         @default(false)
     archive         Boolean         @default(false)
+    slug            String?         @db.VarChar(128) @unique()
     author          User            @relation(fields: [authorId], references: [id])
     authorId        Int
     favourites      Favourites[]

@@ -13,6 +13,7 @@ interface Props {
     text: string
     id: number
     createdAt: Date
+    slug?: string
     saved?: boolean
     token?: string
     favouritable?: boolean
@@ -32,6 +33,7 @@ export default function CardComponent({
     text,
     id,
     createdAt,
+    slug,
     editable = false,
     favouritable = false,
     options = false,
@@ -97,7 +99,7 @@ export default function CardComponent({
             <div className="card">
                 <div className="card-title">
                     <div>
-                        <a href={ `/post/${ id }` }>{ title }</a>
+                        <a href={ slug ? `/${ slug }` : `/post/${ id }` }>{ title }</a>
                     </div>
                     <div>
                         { options &&

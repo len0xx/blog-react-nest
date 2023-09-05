@@ -75,6 +75,7 @@ export default ({ posts, pages, token, onUpdate, userId, options = false }: Prop
                         title={ post.title }
                         text={ post.content }
                         createdAt={ post.createdAt }
+                        slug={ post.slug }
                         options={ options }
                         editable={ post.authorId === userId }
                         favouritable={ !!userId }

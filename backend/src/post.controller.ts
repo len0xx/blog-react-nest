@@ -17,7 +17,7 @@ import {
 } from '@nestjs/common'
 import { PostService } from './post.service'
 import PostDto, { CreatePostDto } from './post.dto'
-import { ApiBadRequestResponse, ApiCreatedResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
+import { ApiBadRequestResponse, ApiCreatedResponse, ApiForbiddenResponse, ApiNotFoundResponse, ApiOkResponse, ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger'
 import { AuthGuard } from './auth.guard'
 import { Authorization } from './auth.utilities'
 import { Prisma, User } from '@prisma/client'
@@ -51,6 +51,7 @@ export class PostController {
     @ApiTags('blog')
     @ApiCreatedResponse({ description: 'New post created successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
+    @ApiForbiddenResponse({ description: 'Authorized user doesn\'t have permission to this resource' })
     @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid' })
     async createPost(@Body() data: CreatePostDto, @Authorization() user: Omit<User, 'password'>): Promise<string> {
         if (
@@ -92,11 +93,27 @@ export class PostController {
     async getPost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (id) {
             const post = await this.postService.get({ id })
-            if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${id} not found`)
+            if (!post || !post.published || post.archive) throw new NotFoundException(`Post with id ${ id } not found`)
             return JSON.stringify(post)
         }
 
         throw new BadRequestException('Invalid post id')
+    }
+
+    @Get('slug/:slug')
+    @Header('Content-Type', 'application/json')
+    @ApiTags('blog')
+    @ApiOkResponse({ description: 'Read the post object' })
+    @ApiNotFoundResponse({ description: 'No posts found with passed slug' })
+    @ApiBadRequestResponse({ description: 'Invalid slug' })
+    async getPostBySlug(@Param('slug') slug: string): Promise<string> {
+        if (slug) {
+            const post = await this.postService.get({ slug })
+            if (!post || !post.published || post.archive) throw new NotFoundException(`Post with slug ${ slug } not found`)
+            return JSON.stringify(post)
+        }
+
+        throw new BadRequestException('Invalid slug')
     }
 
     @Patch(':id')
@@ -105,6 +122,7 @@ export class PostController {
     @ApiTags('blog')
     @ApiOkResponse({ description: 'Post updated successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
+    @ApiForbiddenResponse({ description: 'Authorized user doesn\'t have permission to this resource' })
     @ApiNotFoundResponse({ description: 'No posts found with passed id' })
     @ApiBadRequestResponse({ description: 'Missing required fields ("title", "content" & "published") or they are invalid' })
     async updatePost(
@@ -114,8 +132,11 @@ export class PostController {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
         if (!data.title || !data.content) {
             throw new BadRequestException(
-                'Fields "title", "content" & "published" are required'
+                'Fields "title" & "content" are required'
             )
+        }
+        if (data.slug && !/^[a-zA-Z0-9\-_]*$/.test(data.slug)) {
+            throw new BadRequestException('Custom link should only contain alpha-numeric characters or symbols "-" and "_"')
         }
 
         const post = await this.postService.get({ id })
@@ -136,6 +157,7 @@ export class PostController {
     @ApiTags('blog')
     @ApiOkResponse({ description: 'New post created successfully' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
+    @ApiForbiddenResponse({ description: 'Authorized user doesn\'t have permission to this resource' })
     @ApiNotFoundResponse({ description: 'No posts found with passed id' })
     async deletePost(@Param('id', ParseIntPipe) id: number): Promise<string> {
         if (!id || id < 0) throw new BadRequestException('Invalid post id')
@@ -147,6 +169,24 @@ export class PostController {
         if (result) return JSON.stringify({ ok: true })
 
         throw new BadRequestException('Could not delete a post')
+    }
+
+    @Get('check-slug/:slug')
+    @UseGuards(new AuthGuard([ UserRoleEnum.ADMIN ]))
+    @Header('Content-Type', 'application/json')
+    @ApiTags('blog')
+    @ApiOkResponse({ description: 'Check if a specified slug is available' })
+    @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
+    @ApiForbiddenResponse({ description: 'Authorized user doesn\'t have permission to this resource' })
+    @ApiBadRequestResponse({ description: 'Could not check this slug' })
+    async checkSlug(@Param('slug') slug: string): Promise<string> {
+        try {
+            const post = await this.postService.get({ slug })
+            return JSON.stringify({ ok: true, available: !post })
+        } catch (e) {
+            console.error(e)
+            throw new BadRequestException('Could not check this slug')
+        }
     }
 
     @Get('favourites')

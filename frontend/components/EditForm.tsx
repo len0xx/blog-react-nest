@@ -1,10 +1,12 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
-import { Button, toaster } from 'evergreen-ui'
+import { FormEvent, useEffect, useRef, useState } from 'react'
+import { Button, Dialog, toaster } from 'evergreen-ui'
 import TipTap from './TipTap'
 import Form, { FormRef } from './Form'
-import { Post } from '@/util'
+import { Post, callAPI } from '@/util'
+import { TextInput } from 'evergreen-ui'
+import { API_ENDPOINT } from '@/config'
 
 interface Editor {
     getJSON: () => any
@@ -17,12 +19,17 @@ interface Props {
 }
 
 export default function EditForm({ post, token }: Props) {
+    const [ isSlugLoading, setSlugLoading ] = useState(false)
     const [ isLoading, setIsLoading ] = useState(false)
     const [ disabled, setDisabled ] = useState(false)
     const [ mounted, setMounted ] = useState(false)
+    const [ shown, setShown ] = useState(false)
+    const [ slug, setSlug ] = useState<string | null>(post.slug || null)
+    const [ customLink, setLink ] = useState('')
     const editor = useRef<Editor | null>(null)
     const formRef = useRef<FormRef>(null)
     const titleInput = useRef<HTMLInputElement>(null)
+    const customLinkInput = useRef<HTMLInputElement>(null)
     const [ title, setTitle ] = useState(post.title)
     const [ content, setContent ] = useState(post.content)
 
@@ -40,6 +47,7 @@ export default function EditForm({ post, token }: Props) {
         payload: {
             title,
             content,
+            slug,
             published: true
         }
     }
@@ -53,6 +61,46 @@ export default function EditForm({ post, token }: Props) {
         }
     }
 
+    const saveLink = async () => {
+        interface CheckResponse {
+            ok: boolean
+            available: boolean
+        }
+
+        setSlugLoading(true)
+        if (customLink !== '') {
+            try {
+                const response = await callAPI<CheckResponse>(
+                    `/api/post/check-slug/${ customLink }`,
+                    { method: 'GET', token }
+                )
+                setSlugLoading(false)
+
+                if (response.available) {
+                    setSlug(customLink)
+                    toaster.success('A custom link has successfully been saved')
+                    setShown(false)
+                }
+                else {
+                    toaster.danger(
+                        'This custom link is unavailable',
+                        { description: 'Because it\'s already taken' }
+                    )
+                }
+            }
+            catch (e) {
+                console.error(e)
+                setSlugLoading(false)
+                toaster.danger('An error occurred while checking availability of this custom link')
+            }
+        }
+    }
+
+    const openDialog = () => {
+        setShown(true)
+        setTimeout(() => customLinkInput.current!.value = slug || '', 100)
+    }
+
     useEffect(() => {
         if (!mounted) {
             titleInput.current!.focus()
@@ -62,6 +110,25 @@ export default function EditForm({ post, token }: Props) {
 
     return (
         <>
+            <Dialog
+                isShown={ shown }
+                title="Set a custom link for this post"
+                onCloseComplete={ () => setShown(false) }
+                onConfirm={ saveLink }
+                confirmLabel="Confirm"
+                isConfirmLoading={ isSlugLoading }
+                minHeightContent={ 0 }
+            >
+                <TextInput
+                    placeholder="Custom link"
+                    ref={ customLinkInput }
+                    onInput={(e: FormEvent<HTMLInputElement>) => setLink((e.target as HTMLInputElement).value)}
+                    width="100%"
+                />
+                <br />
+                <br />
+                <p style={{ color: 'black' }}>A complete link will look like: { API_ENDPOINT }/post/{ customLink }</p>
+            </Dialog>
             <Form
                 action={ `/api/post/${ post.id }` }
                 method="PATCH"
@@ -77,17 +144,26 @@ export default function EditForm({ post, token }: Props) {
                 <TipTap initialContent={ post.content } onUpdate={ inputUpdated } ref={ editor } />
             </Form>
             <br />
-            <span onClick={ trySubmit }>
+            <div className="buttons">
+                <span onClick={ trySubmit }>
+                    <Button
+                        type="button"
+                        appearance="primary"
+                        onClick={ () => formRef.current!.requestSubmit() }
+                        isLoading={ isLoading }
+                        disabled={ disabled }
+                    >
+                        Save
+                    </Button>
+                </span>
                 <Button
                     type="button"
-                    appearance="primary"
-                    onClick={ () => formRef.current!.requestSubmit() }
-                    isLoading={ isLoading }
-                    disabled={ disabled }
+                    appearance="default"
+                    onClick={ openDialog }
                 >
-                    Save
+                    { post.slug ? 'Change' : 'Set' } custom link
                 </Button>
-            </span>
+            </div>
         </>
     )
 }

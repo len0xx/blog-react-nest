@@ -196,8 +196,7 @@ header a {
     max-width: 300px;
 }
 
-.buttons > button:not(:last-child),
-.buttons > a:not(:last-child) {
+.buttons > *:not(:last-child) {
     margin-right: 1em;
 }
 
