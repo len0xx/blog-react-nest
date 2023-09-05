@@ -4,9 +4,8 @@ import { FormEvent, useEffect, useRef, useState } from 'react'
 import { Button, Dialog, toaster } from 'evergreen-ui'
 import TipTap from './TipTap'
 import Form, { FormRef } from './Form'
-import { Post, callAPI } from '@/util'
+import { Post, ValidationError, ValidationSchema, callAPI, getFullPostSlugLink, validateSchema } from '@/util'
 import { TextInput } from 'evergreen-ui'
-import { API_ENDPOINT } from '@/config'
 
 interface Editor {
     getJSON: () => any
@@ -42,6 +41,26 @@ export default function EditForm({ post, token }: Props) {
         setDisabled(!localContentText.length || !localTitle.length)
     }
 
+    const validateSlug = (slug: string) => {
+        if (!slug) return false
+        else if (slug.startsWith('-') || slug.startsWith('_')) {
+            return false
+        }
+        else if (slug.endsWith('-') || slug.endsWith('_')) {
+            return false
+        }
+
+        return true
+    }
+
+    const schema: ValidationSchema = {
+        slug: {
+            required: false,
+            match: /^[a-zA-Z0-9-_]*$/,
+            customValidation: validateSlug
+        }
+    }
+
     const details = {
         token,
         payload: {
@@ -67,6 +86,20 @@ export default function EditForm({ post, token }: Props) {
             available: boolean
         }
 
+        try {
+            validateSchema(schema, { slug: customLink })
+        }
+        catch (e) {
+            console.error(e)
+            if (e instanceof ValidationError) {
+                toaster.danger(
+                    'Invalid link',
+                    { description: 'It should only contain alpha-numeric characters or symbols "-" and "_". And it can not start or end with "-" or "_" symbol' }
+                )
+            }
+            return
+        }
+
         setSlugLoading(true)
         if (customLink !== '') {
             try {
@@ -84,14 +117,17 @@ export default function EditForm({ post, token }: Props) {
                 else {
                     toaster.danger(
                         'This custom link is unavailable',
-                        { description: 'Because it\'s already taken' }
+                        { description: 'Because it\'s already taken. Please choose another link' }
                     )
                 }
             }
             catch (e) {
                 console.error(e)
                 setSlugLoading(false)
-                toaster.danger('An error occurred while checking availability of this custom link')
+                toaster.danger(
+                    'An error occurred while checking availability of this custom link',
+                    { description: 'Please try again later' }
+                )
             }
         }
     }
@@ -99,6 +135,7 @@ export default function EditForm({ post, token }: Props) {
     const openDialog = () => {
         setShown(true)
         setTimeout(() => customLinkInput.current!.value = slug || '', 100)
+        setLink(slug || '')
     }
 
     useEffect(() => {
@@ -127,7 +164,15 @@ export default function EditForm({ post, token }: Props) {
                 />
                 <br />
                 <br />
-                <p style={{ color: 'black' }}>A complete link will look like: { API_ENDPOINT }/post/{ customLink }</p>
+                <p style={{ color: 'black' }}>
+                    { customLink ? 
+                        <>
+                            A complete link will look like: { getFullPostSlugLink(customLink) }
+                        </>
+                        :
+                        <></>
+                    }
+                </p>
             </Dialog>
             <Form
                 action={ `/api/post/${ post.id }` }

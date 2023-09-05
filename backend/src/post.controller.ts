@@ -25,6 +25,14 @@ import { ExtendedUser } from './user.service'
 import { UserRoleEnum } from './user.dto'
 
 const POSTS_AMOUNT = 20
+const SLUG_REGEX = /^[a-zA-Z0-9-_]*$/
+
+const validateSlug = (slug: string) => {
+    if (!SLUG_REGEX.test(slug)) return false
+    else if (slug.startsWith('-') || slug.startsWith('_')) return false
+    else if (slug.endsWith('-') || slug.endsWith('_')) return false
+    return true
+}
 
 @Controller('api/post')
 export class PostController {
@@ -135,8 +143,10 @@ export class PostController {
                 'Fields "title" & "content" are required'
             )
         }
-        if (data.slug && !/^[a-zA-Z0-9\-_]*$/.test(data.slug)) {
-            throw new BadRequestException('Custom link should only contain alpha-numeric characters or symbols "-" and "_"')
+        if (data.slug && !validateSlug(data.slug)) {
+            throw new BadRequestException(
+                'Custom link should only contain alpha-numeric characters or symbols "-" and "_". And it should not start or end with "-" or "_" symbols'
+            )
         }
 
         const post = await this.postService.get({ id })
@@ -178,10 +188,15 @@ export class PostController {
     @ApiOkResponse({ description: 'Check if a specified slug is available' })
     @ApiUnauthorizedResponse({ description: 'Unauthorized request' })
     @ApiForbiddenResponse({ description: 'Authorized user doesn\'t have permission to this resource' })
-    @ApiBadRequestResponse({ description: 'Could not check this slug' })
+    @ApiBadRequestResponse({ description: 'Invalid slug or unknown error' })
     async checkSlug(@Param('slug') slug: string): Promise<string> {
         try {
             const post = await this.postService.get({ slug })
+            if (!validateSlug(slug)) {
+                throw new BadRequestException(
+                    'Invalid slug: It should only contain alpha-numeric characters or symbols "-" and "_". And it should not start or end with "-" or "_" symbols'
+                )
+            }
             return JSON.stringify({ ok: true, available: !post })
         } catch (e) {
             console.error(e)

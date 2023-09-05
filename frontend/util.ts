@@ -339,3 +339,5 @@ export const validateSchema = <ValueType>(
 }
 
 export const getProfileLink = (id: number) => `/user/${ id }`
+
+export const getFullPostSlugLink = (slug: string) => `${ API_ENDPOINT }/${ slug }`
