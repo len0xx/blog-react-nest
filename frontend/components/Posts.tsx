@@ -9,13 +9,13 @@ import { Post, callAPI } from '@/util'
 interface Props {
     posts: Post[]
     pages: number
-    editable?: boolean
-    favouritable?: boolean
+    options: boolean
+    userId?: number
     token?: string
     onUpdate?: (posts: Post[]) => void
 }
 
-export default ({ posts, pages, token, onUpdate, editable = false, favouritable = false }: Props) => {
+export default ({ posts, pages, token, onUpdate, userId, options = false }: Props) => {
     const [ page, setPage ] = useState(1)
     const [ localPosts, setPosts ] = useState<Post[]>([])
     const [ favourites, setFavourites ] = useState<number[]>([])
@@ -48,7 +48,7 @@ export default ({ posts, pages, token, onUpdate, editable = false, favouritable 
 
     useEffect(() => {
         try {
-            if (!mounted && favouritable) {
+            if (!mounted && options && userId) {
                 callAPI<{
                     ok: boolean,
                     favourites: number[]
@@ -75,8 +75,9 @@ export default ({ posts, pages, token, onUpdate, editable = false, favouritable 
                         title={ post.title }
                         text={ post.content }
                         createdAt={ post.createdAt }
-                        editable={ editable }
-                        favouritable={ favouritable }
+                        options={ options }
+                        editable={ post.authorId === userId }
+                        favouritable={ !!userId }
                         saved={ post.saved }
                         token={ token }
                         onDelete={ postDeleted }

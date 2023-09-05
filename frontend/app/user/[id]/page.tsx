@@ -59,7 +59,8 @@ export default async ({ params: { id }, searchParams }: PageOptions) => {
 		<UserProfile
             user={ user }
             editable={ session && user.id === session.user.id || false }
-            favouritable={ !!(session && session.user) }
+            options={ !!(session && session.user) }
+            authorizedId={ (session && session.user) ? session.user.id : undefined }
             token={ session && session.user.backendToken || undefined }
             posts={ postsData.posts }
             pages={ postsData.pages }

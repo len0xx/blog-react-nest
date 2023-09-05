@@ -17,6 +17,7 @@ interface Props {
     token?: string
     favouritable?: boolean
     editable?: boolean
+    options: boolean
     children?: React.ReactNode
     onDelete?: (id: number) => void
 }
@@ -33,6 +34,7 @@ export default function CardComponent({
     createdAt,
     editable = false,
     favouritable = false,
+    options = false,
     token,
     onDelete,
     saved
@@ -98,7 +100,7 @@ export default function CardComponent({
                         <a href={ `/post/${ id }` }>{ title }</a>
                     </div>
                     <div>
-                        { (editable || favouritable) &&
+                        { options &&
                             <Popover
                                 position={Position.BOTTOM_RIGHT}
                                 content={

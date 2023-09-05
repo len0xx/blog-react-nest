@@ -23,8 +23,8 @@ export default function EditForm({ post, token }: Props) {
     const editor = useRef<Editor | null>(null)
     const formRef = useRef<FormRef>(null)
     const titleInput = useRef<HTMLInputElement>(null)
-    const [ title, setTitle ] = useState('')
-    const [ content, setContent ] = useState('')
+    const [ title, setTitle ] = useState(post.title)
+    const [ content, setContent ] = useState(post.content)
 
     const inputUpdated = () => {
         const localTitle = titleInput.current!.value

@@ -1,6 +1,8 @@
 import Posts from '@/components/Posts'
 import { API_ENDPOINT_BACK } from '@/config'
+import { authOptions } from '@/lib/auth'
 import { Post } from '@/util'
+import { getServerSession } from 'next-auth'
 
 interface PostsResponse {
     posts: Post[]
@@ -20,6 +22,8 @@ const getData = async (page = 1): Promise<PostsResponse> => {
 }
 
 export default async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+    const session = await getServerSession(authOptions)
+    const authorized = !!(session && session.user)
     const page = searchParams['page'] && !isNaN(+searchParams['page']) ? +searchParams['page'] : 1
 	const data = await getData(page)
     const posts = data.posts
@@ -30,7 +34,13 @@ export default async ({ searchParams }: { searchParams: { [key: string]: string 
             <h2>Most recent posts</h2>
             <br />
 			{ posts && posts.length ? (
-                <Posts posts={ posts } pages={ pages } />
+                <Posts
+                    posts={ posts }
+                    pages={ pages }
+                    token={ authorized ? session.user.backendToken : undefined }
+                    options={ authorized }
+                    userId={ authorized ? session.user.id : undefined }
+                />
 			) : ( 
 				<p>No posts found</p>
 			)}

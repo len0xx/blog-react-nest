@@ -280,6 +280,10 @@ footer > div.source-code-note {
     transition: 0.1s ease-in-out;
 }
 
+footer > div:not(.source-code-note) > a {
+    text-decoration: none;
+}
+
 footer > div.source-code-note:hover {
     opacity: 1;
 }
