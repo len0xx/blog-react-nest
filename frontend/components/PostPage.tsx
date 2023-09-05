@@ -25,7 +25,7 @@ export default function PostPage({ title, content, author, createdAt }: Componen
                 <br />
             </> }
 			<Content content={ content } /><br /><br />
-            <p className="post-page-date">Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') }</p>
+            <p className="post-page-date">Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') } (GMT+5)</p>
 		</div>
 	)
 }

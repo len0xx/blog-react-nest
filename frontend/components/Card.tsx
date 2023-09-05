@@ -136,7 +136,7 @@ export default function CardComponent({
                         <Content content={ text } />
                     </div>
                     <div className="card-date">
-                        Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') }
+                        Published at { dayjs(createdAt).format('DD.MM.YYYY, HH:mm') } (GMT+5)
                     </div>
                 </div>
             </div>
