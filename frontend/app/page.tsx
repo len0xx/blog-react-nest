@@ -9,6 +9,10 @@ interface PostsResponse {
     pages: number
 }
 
+interface SearchParams {
+    [key: string]: string | string[] | undefined
+}
+
 const getData = async (page = 1): Promise<PostsResponse> => {
     const url = `${ API_ENDPOINT_BACK }/api/post?page=${ page }`
 	const res = await fetch(url, { cache: 'no-store' })
@@ -21,7 +25,11 @@ const getData = async (page = 1): Promise<PostsResponse> => {
 	return response
 }
 
-export default async ({ searchParams }: { searchParams: { [key: string]: string | string[] | undefined } }) => {
+interface PageProps {
+    searchParams: SearchParams
+}
+
+export default async ({ searchParams }: PageProps) => {
     const session = await getServerSession(authOptions)
     const authorized = !!(session && session.user)
     const page = searchParams['page'] && !isNaN(+searchParams['page']) ? +searchParams['page'] : 1

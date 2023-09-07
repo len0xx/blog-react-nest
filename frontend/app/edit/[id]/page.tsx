@@ -4,12 +4,6 @@ import { authOptions } from '@/lib/auth'
 import { HTTPError, Post } from '@/util'
 import { getServerSession } from 'next-auth'
 
-interface PageOptions {
-	params: {
-		id: string 
-	}
-}
-
 const getPost = async (id = 1): Promise<Post> => {
     if (isNaN(id)) {
         throw new HTTPError(400, 'Invalid post id')
@@ -26,7 +20,13 @@ const getPost = async (id = 1): Promise<Post> => {
 	return response as Post
 }
 
-export default async ({ params }: PageOptions) => {
+interface PageProps {
+	params: {
+		id: string 
+	}
+}
+
+export default async ({ params }: PageProps) => {
     const session = await getServerSession(authOptions)
     const post = await getPost(+params.id)
 

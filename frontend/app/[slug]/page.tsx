@@ -2,12 +2,6 @@ import PostPage from '@/components/PostPage'
 import { API_ENDPOINT_BACK } from '@/config'
 import { Post, Author, HTTPError } from '@/util'
 
-interface PageOptions {
-	params: {
-		slug: string 
-	}
-}
-
 const getData = async (slug: string): Promise<Post> => {
 	const res = await fetch(
         `${ API_ENDPOINT_BACK }/api/post/slug/${ slug }`,
@@ -32,7 +26,13 @@ const getAuthor = async (id: number): Promise<Author> => {
 	return data! as Author
 }
 
-export default async ({ params: { slug } }: PageOptions) => {
+interface PageProps {
+	params: {
+		slug: string 
+	}
+}
+
+export default async ({ params: { slug } }: PageProps) => {
 	const post = await getData(slug)
     const author = await getAuthor(post.authorId)
 

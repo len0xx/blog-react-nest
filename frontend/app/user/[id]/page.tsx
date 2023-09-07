@@ -4,13 +4,6 @@ import UserProfile from '@/components/UserProfile'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 
-interface PageOptions {
-	params: {
-		id: string 
-	}
-    searchParams: { [key: string]: string | string[] | undefined }
-}
-
 const getData = async (id: number): Promise<User> => {
 	if (isNaN(id)) {
         throw new HTTPError(400, 'Invalid user id')
@@ -49,7 +42,18 @@ const getPosts = async (id: number, page: number): Promise<PostsResponse> => {
 	return data! as PostsResponse
 }
 
-export default async ({ params: { id }, searchParams }: PageOptions) => {
+interface SearchParams {
+    [key: string]: string | string[] | undefined
+}
+
+interface PageProps {
+	params: {
+		id: string 
+	}
+    searchParams: SearchParams
+}
+
+export default async ({ params: { id }, searchParams }: PageProps) => {
     const session = await getServerSession(authOptions)
     const page = searchParams['page'] && !isNaN(+searchParams['page']) ? +searchParams['page'] : 1
 	const user = await getData(+id)
