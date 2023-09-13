@@ -1,6 +1,6 @@
 # React + NestJS Blog App
 
-Minimalistic but fully functional blog application
+Minimalistic but fully functional blog application with WYSIWYG editor
 
 ## Technologies
 
