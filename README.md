@@ -48,6 +48,7 @@ Then open your browser and go to the address, the application is running on. (Re
 - [x] WYSIWYG editor
 - [x] Swagger REST API Docs
 - [x] Image uploading
+- [ ] Authorization via Telegram
 - [ ] Stack multiple images into a gallery
 - [ ] User profile picture
 - [ ] Post comments
