@@ -1,0 +1,51 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: images
+  labels:
+    app: images
+spec:
+  selector:
+    app: images
+  ports:
+  - port: 8100
+    nodePort: 31666
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: images
+  labels:
+    app: images
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: images
+  template:
+    metadata:
+      labels:
+        app: images
+    spec:
+      containers:
+      - name: images
+        image: len0xx/blog-images:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /api/healthcheck
+            port: 8100
+          initialDelaySeconds: 3
+          periodSeconds: 30
+        env:
+        - name: PORT
+          value: "8100"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-cred
+              key: url
+        ports:
+        - containerPort: 8100
+          protocol: TCP

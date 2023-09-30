@@ -1,0 +1,51 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  selector:
+    app: backend
+  ports:
+  - port: 8000
+    nodePort: 31333
+  type: NodePort
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+      - name: backend
+        image: len0xx/blog-nest:latest
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /api/healthcheck
+            port: 8000
+          initialDelaySeconds: 3
+          periodSeconds: 30
+        env:
+        - name: PORT
+          value: "8000"
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: db-cred
+              key: url
+        ports:
+        - containerPort: 8000
+          protocol: TCP
