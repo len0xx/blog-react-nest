@@ -10,7 +10,7 @@ Minimalistic but fully functional blog application with WYSIWYG editor
 - Prisma (ORM)
 - PostgreSQL (DB)
 - Nginx (Exposing both frontend and backend services in single domain space (and also static files serving))
-- Docker
+- Docker Compose/Kubernetes for container orchestration
 
 ### Overall structure
 
@@ -23,6 +23,8 @@ Minimalistic but fully functional blog application with WYSIWYG editor
 
 
 ## Getting started
+
+### Docker Compose
 
 To launch this project you need to have Docker and Docker Compose installed on your machine: [Get it here](https://docs.docker.com/get-docker/)
 
@@ -40,6 +42,10 @@ docker compose up
 # Windows system
 docker-compose up
 ```
+
+### Kubernetes
+
+Coming soon...
 
 Then open your browser and go to the address, the application is running on. (Read note above for details)
 
