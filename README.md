@@ -43,17 +43,18 @@ docker compose up
 docker-compose up
 ```
 
+Then open your browser and go to the address, the application is running on. (Read note above for details)
+
 ### Kubernetes
 
 Coming soon...
-
-Then open your browser and go to the address, the application is running on. (Read note above for details)
 
 ## Roadmap
 - [x] Basic authorization
 - [x] WYSIWYG editor
 - [x] Swagger REST API Docs
 - [x] Image uploading
+- [x] Kubernetes support
 - [ ] Authorization via Telegram
 - [ ] Stack multiple images into a gallery
 - [ ] User profile picture
