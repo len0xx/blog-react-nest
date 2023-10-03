@@ -2,6 +2,11 @@
 
 Minimalistic but fully functional blog application with WYSIWYG editor
 
+Currently supports:
+- Authorization via email/password pair
+- Writing posts with WYSIWYG editor (headers, bullet lists, images, code blocks, quotes, bold, italic, underlined text)
+- Saving posts to favourites
+
 ## Technologies
 
 - React (Frontend)
