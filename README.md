@@ -54,14 +54,7 @@ Then open your browser and go to the address, the application is running on. (Re
 
 > To launch this application using k8s, you obviously need a k8s cluster running.
 
-Apply these manifests to setup the application
-```
-kubectl apply -f manifests/db.yml
-kubectl apply -f manifests/backend-secrets.yml
-kubectl apply -f manifests/backend.yml
-kubectl apply -f manifests/images.yml
-kubectl apply -f manifests/frontend.yml
-```
+**Apply all the manifests** to setup the application: `kubectl apply -f manifests/db.yml`
 
 To expose the cluster to the network you can use this `nginx` config:
 ```
